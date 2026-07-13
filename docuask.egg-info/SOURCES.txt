@@ -1,0 +1,15 @@
+README.md
+pyproject.toml
+app/main.py
+app/config/app.py
+app/config/database.py
+app/config/openai.py
+app/config/redis.py
+app/config/settings.py
+app/config/storage.py
+app/workers/document_worker.py
+docuask.egg-info/PKG-INFO
+docuask.egg-info/SOURCES.txt
+docuask.egg-info/dependency_links.txt
+docuask.egg-info/requires.txt
+docuask.egg-info/top_level.txt

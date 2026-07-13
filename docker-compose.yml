@@ -1,0 +1,76 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: pgvector/pgvector:pg17
+
+    container_name: docuask-postgres
+
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+
+      POSTGRES_DB: ${POSTGRES_DB}
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+
+    container_name: docuask-redis
+
+    restart: unless-stopped
+
+    ports:
+      - "6379:6379"
+
+  api:
+    build: .
+
+    container_name: docuask-api
+
+    env_file:
+      - .env
+
+    volumes:
+      - ./uploads:/uploads
+
+      - .:/app
+
+    ports:
+      - "8000:8000"
+
+    depends_on:
+      - postgres
+
+      - redis
+
+  worker:
+    build: .
+
+    container_name: docuask-worker
+
+    env_file:
+      - .env
+
+    volumes:
+      - ./uploads:/uploads
+
+      - .:/app
+
+    depends_on:
+      - postgres
+
+      - redis
+
+    command: ["uv", "run", "python", "-m", "app.workers.document_worker"]
+
+volumes:
+  postgres_data:
