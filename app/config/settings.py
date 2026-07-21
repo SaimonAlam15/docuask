@@ -1,24 +1,25 @@
-from functools import lru_cache
-
-from app.config.app import AppSettings
-from app.config.database import DatabaseSettings
-from app.config.openai import OpenAISettings
-from app.config.redis import RedisSettings
-from app.config.storage import StorageSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
-class Settings:
-    def __init__(self):
-        self.app = AppSettings()
-        self.database = DatabaseSettings()
-        self.redis = RedisSettings()
-        self.storage = StorageSettings()
-        self.openai = OpenAISettings()
+from app.config.models import (
+    AppConfig,
+    DatabaseConfig,
+    OpenAIConfig,
+    RedisConfig,
+    StorageConfig
+)
 
 
-@lru_cache
-def get_settings() -> Settings:
-    return Settings()
+class Settings(BaseSettings):
+    model_config = SettingsConfigDict(
+        env_file='.env',
+        env_nested_delimiter='__',
+        env_file_encoding='utf-8',
+        extra='ignore'
+    )
 
-
-settings = get_settings()
+    app: AppConfig
+    database: DatabaseConfig
+    redis: RedisConfig
+    storage: StorageConfig
+    openai: OpenAIConfig
