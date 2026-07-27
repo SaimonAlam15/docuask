@@ -8,13 +8,22 @@ class AppConfig(BaseModel):
 
 
 class DatabaseConfig(BaseModel):
-    model_config = ConfigDict(frozen=True)
-
     host: str
     port: int
     user: str
     password: SecretStr
     name: str
+
+    @property
+    def url(self) -> str:
+        return (
+            f"postgresql+asyncpg://"
+            f"{self.user}:"
+            f"{self.password.get_secret_value()}@"
+            f"{self.host}:"
+            f"{self.port}/"
+            f"{self.name}"
+        )
 
 
 class RedisConfig(BaseModel):

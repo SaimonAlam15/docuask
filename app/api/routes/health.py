@@ -1,7 +1,9 @@
 from fastapi import APIRouter, Depends
 
+from sqlalchemy import text
+from sqlalchemy.ext.asyncio import AsyncSession
 from app.config import Settings
-from app.dependencies import get_settings
+from app.dependencies import get_settings, get_session
 
 import logging
 
@@ -20,4 +22,15 @@ async def health(
     return {
         "status": "healthy",
         "application": settings.app.name
+    }
+
+
+@router.get('/health/database')
+async def database_health(
+    session: AsyncSession = Depends(get_session)
+):
+    await session.execute(text("SELECT 1"))
+
+    return {
+        "status": "healthy",
     }
