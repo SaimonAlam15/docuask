@@ -26,3 +26,19 @@ dev = [
     "pytest-asyncio>=1.4.0",
     "ruff>=0.15.21",
 ]
+
+[tool.ruff]
+line-length = 100
+target-version = "py313"
+
+[tool.ruff.lint]
+select = [
+    "E",
+    "F",
+    "I",
+    "UP",
+]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
