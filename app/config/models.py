@@ -1,5 +1,6 @@
 from pydantic import BaseModel, ConfigDict, SecretStr
 
+
 class AppConfig(BaseModel):
     model_config = ConfigDict(frozen=True)
 
@@ -37,6 +38,7 @@ class StorageConfig(BaseModel):
     model_config = ConfigDict(frozen=True)
 
     upload_directory: SecretStr
+    provider: str
 
 
 class OpenAIConfig(BaseModel):
