@@ -1,11 +1,11 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.document_file import DocumentFile
 from app.schemas.document_file import DocumentFileCreate
 
 
 class DocumentFileRepository:
-    def __init__(self, db: Session):
+    def __init__(self, db: AsyncSession):
         self.db = db
 
     async def create_document_file(self, document_file: DocumentFileCreate):
@@ -22,9 +22,9 @@ class DocumentFileRepository:
                 checksum=document_file.checksum,
             )
             self.db.add(db_document_file)
-            await self.db.commit()
+            await self.db.flush()
             await self.db.refresh(db_document_file)
         except Exception:
-            self.db.rollback()
+            await self.db.rollback()
             raise
         return db_document_file

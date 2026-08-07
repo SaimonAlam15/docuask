@@ -1,6 +1,7 @@
 import logging
 
 from fastapi import UploadFile
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.repositories.document_file_repository import DocumentFileRepository
 from app.repositories.document_repository import DocumentRepository
@@ -12,7 +13,13 @@ logger = logging.getLogger(__name__)
 
 
 class DocumentService:
-    def __init__(self, doc_repo: DocumentRepository, doc_file_repo: DocumentFileRepository):
+    def __init__(
+        self,
+        session: AsyncSession,
+        doc_repo: DocumentRepository,
+        doc_file_repo: DocumentFileRepository,
+    ):
+        self.session = session
         self.doc_repo = doc_repo
         self.doc_file_repo = doc_file_repo
 
@@ -45,6 +52,7 @@ class DocumentService:
                     checksum=checksum,
                 )
                 saved_document_file = await self.doc_file_repo.create_document_file(document_file)
+                await self.session.commit()
         except Exception as e:
             logger.exception("Upload error: %s", str(e))
             raise
