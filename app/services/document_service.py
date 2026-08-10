@@ -3,6 +3,7 @@ import logging
 from fastapi import UploadFile
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.config.settings import Settings
 from app.repositories.document_file_repository import DocumentFileRepository
 from app.repositories.document_repository import DocumentRepository
 from app.schemas.document import DocumentCreate, DocumentResponse
@@ -18,10 +19,12 @@ class DocumentService:
         session: AsyncSession,
         doc_repo: DocumentRepository,
         doc_file_repo: DocumentFileRepository,
+        settings: Settings,
     ):
         self.session = session
         self.doc_repo = doc_repo
         self.doc_file_repo = doc_file_repo
+        self.settings = settings
 
     async def upload_file(
         self,
@@ -29,7 +32,9 @@ class DocumentService:
         document: DocumentCreate,
         storage: StorageBackend,
     ) -> DocumentResponse:
-        storage_result = await storage.store(file)
+        storage_result = await storage.store(
+            file, self.settings.storage.upload_directory.get_secret_value()
+        )
         storage_key = storage_result.storage_key
         checksum = storage_result.checksum
 
@@ -44,7 +49,7 @@ class DocumentService:
             if saved_document:
                 document_file = DocumentFileCreate(
                     document_id=saved_document.id,
-                    provider="LOCAL",
+                    provider=self.settings.storage.provider,
                     storage_key=storage_key,
                     original_filename=filename,
                     mime_type=mime_type,

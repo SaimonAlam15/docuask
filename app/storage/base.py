@@ -9,8 +9,8 @@ class StorageBackend(Protocol):
     async def store(self, file: UploadFile) -> DocumentFileResult:
         pass
 
-    async def delete(self):
+    async def exists(self, file_path: str) -> bool:
         pass
 
-    async def exists(self):
+    async def delete(self, file_path: str) -> bool:
         pass
