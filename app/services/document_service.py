@@ -60,6 +60,7 @@ class DocumentService:
                 await self.session.commit()
         except Exception as e:
             logger.exception("Upload error: %s", str(e))
+            await storage.delete(storage_key)
             raise
 
         return {

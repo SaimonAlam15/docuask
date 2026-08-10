@@ -6,6 +6,7 @@ from pathlib import Path
 from uuid import uuid4
 
 import aiofiles
+import aiofiles.os as aios
 from fastapi import UploadFile
 
 from .base import StorageBackend
@@ -33,6 +34,10 @@ class LocalStorage(StorageBackend):
                 while chunk := await file.read(65536):
                     await buffer.write(chunk)
                     sha256_hash.update(chunk)
+            logger.info("Successfully uploaded file: %s", str(path))
+        except Exception as e:
+            logger.error("Failed to upload. Error: %s", str(e))
+            raise
         finally:
             await file.close()
 
@@ -41,7 +46,7 @@ class LocalStorage(StorageBackend):
         return DocumentFileResult(storage_key=str(path), checksum=checksum)
 
     async def exists(self, file_path: str) -> bool:
-        if await aiofiles.os.path.exists(file_path):
+        if await aios.path.exists(file_path):
             logger.info("The file or directory exists.")
             return True
         else:
@@ -49,7 +54,7 @@ class LocalStorage(StorageBackend):
         return False
 
     async def delete(self, file_path: str) -> bool:
-        if self.exists(file_path):
+        if await self.exists(file_path):
             try:
                 await asyncio.to_thread(os.remove, file_path)
                 logger.info("Successfully deleted %s", file_path)

@@ -9,7 +9,6 @@ class DocumentFileRepository:
         self.db = db
 
     async def create_document_file(self, document_file: DocumentFileCreate):
-        print("In create document file")
         try:
             db_document_file = DocumentFile(
                 document_id=document_file.document_id,
