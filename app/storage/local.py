@@ -2,6 +2,7 @@ import hashlib
 from pathlib import Path
 from uuid import uuid4
 
+import aiofiles
 from fastapi import UploadFile
 
 from .base import StorageBackend
@@ -23,13 +24,13 @@ class LocalStorage(StorageBackend):
         sha256_hash = hashlib.sha256()
 
         try:
-            with path.open("wb") as buffer:
+            async with aiofiles.open(path, "wb") as buffer:
                 while chunk := await file.read(65536):
-                    buffer.write(chunk)
+                    await buffer.write(chunk)
                     sha256_hash.update(chunk)
         finally:
             await file.close()
 
         checksum = sha256_hash.hexdigest()
 
-        return {"storage_key": path, "checksum": checksum}
+        return DocumentFileResult(storage_key=str(path), checksum=checksum)

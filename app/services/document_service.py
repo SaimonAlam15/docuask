@@ -30,8 +30,8 @@ class DocumentService:
         storage: StorageBackend,
     ) -> DocumentResponse:
         storage_result = await storage.store(file)
-        storage_key = storage_result.get("storage_key")
-        checksum = storage_result.get("checksum")
+        storage_key = storage_result.storage_key
+        checksum = storage_result.checksum
 
         size = file.size
         mime_type = file.content_type
@@ -45,7 +45,7 @@ class DocumentService:
                 document_file = DocumentFileCreate(
                     document_id=saved_document.id,
                     provider="LOCAL",
-                    storage_key=str(storage_key),
+                    storage_key=storage_key,
                     original_filename=filename,
                     mime_type=mime_type,
                     size_bytes=size,
