@@ -59,7 +59,10 @@ class DocumentService:
             logger.exception("Upload error: %s", str(e))
             await self.session.rollback()
             if storage_key:
-                await storage.delete(storage_key)
+                try:
+                    await storage.delete(storage_key)
+                except Exception:
+                    logger.error("Failed to clean up stored file: %s", storage_key)
             raise
 
         return {
