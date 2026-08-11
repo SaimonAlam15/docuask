@@ -4,6 +4,7 @@ from fastapi import UploadFile
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config.settings import Settings
+from app.enums.storage_provider import StorageProvider
 from app.repositories.document_file_repository import DocumentFileRepository
 from app.repositories.document_repository import DocumentRepository
 from app.schemas.document import DocumentCreate, DocumentResponse
@@ -48,7 +49,7 @@ class DocumentService:
             if saved_document:
                 document_file = DocumentFileCreate(
                     document_id=saved_document.id,
-                    provider=self.settings.storage.provider,
+                    provider=StorageProvider(self.settings.storage.provider),
                     storage_key=storage_key,
                     original_filename=filename,
                     mime_type=mime_type,
