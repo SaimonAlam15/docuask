@@ -23,8 +23,7 @@ class LocalStorage(StorageBackend):
         file_id = str(uuid4())
         filename = file.filename
         extension = filename.split(".")[-1]
-        # size = file.size
-        # mime_type = file.content_type
+
         path = UPLOAD_DIR / f"{file_id[:2]}/{file_id[2:4]}/{file_id}.{extension}"
         path.parent.mkdir(parents=True, exist_ok=True)
         sha256_hash = hashlib.sha256()
@@ -53,12 +52,14 @@ class LocalStorage(StorageBackend):
             logger.info("File not found.")
         return False
 
-    async def delete(self, file_path: str) -> bool:
-        if await self.exists(file_path):
-            try:
-                await asyncio.to_thread(os.remove, file_path)
-                logger.info("Successfully deleted %s", file_path)
-                return True
-            except PermissionError:
-                logger.error("Error: Insufficient permissions to delete %s", file_path)
-        return False
+    async def delete(self, file_path: str) -> None:
+        try:
+            await asyncio.to_thread(os.remove, file_path)
+            logger.info("Successfully deleted %s", file_path)
+        except FileNotFoundError:
+            logger.error("File not found.")
+            raise
+        except PermissionError:
+            logger.error("Error: Insufficient permissions to delete %s", file_path)
+            raise
+        return None

@@ -32,19 +32,18 @@ class DocumentService:
         document: DocumentCreate,
         storage: StorageBackend,
     ) -> DocumentResponse:
-        storage_result = await storage.store(
-            file, self.settings.storage.upload_directory.get_secret_value()
-        )
-        storage_key = storage_result.storage_key
-        checksum = storage_result.checksum
-
-        size = file.size
-        mime_type = file.content_type
-        filename = file.filename
-
         saved_document_file = None
 
         try:
+            storage_result = await storage.store(
+                file, self.settings.storage.upload_directory.get_secret_value()
+            )
+            storage_key = storage_result.storage_key
+            checksum = storage_result.checksum
+
+            size = file.size
+            mime_type = file.content_type
+            filename = file.filename
             saved_document = await self.doc_repo.create_document(document)
             if saved_document:
                 document_file = DocumentFileCreate(
@@ -60,6 +59,7 @@ class DocumentService:
                 await self.session.commit()
         except Exception as e:
             logger.exception("Upload error: %s", str(e))
+            await self.session.rollback()
             await storage.delete(storage_key)
             raise
 

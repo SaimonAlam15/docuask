@@ -1,6 +1,6 @@
 import logging
 
-from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
+from fastapi import APIRouter, Depends, File, UploadFile
 
 from app.dependencies import get_storage_backend
 from app.schemas.document import DocumentCreate
@@ -20,7 +20,4 @@ async def create_document(
     document_service: DocumentService = Depends(get_document_service),
     storage_backend: StorageBackend = Depends(get_storage_backend),
 ):
-    try:
-        return await document_service.upload_file(file, document, storage_backend)
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e)) from e
+    return await document_service.upload_file(file, document, storage_backend)
