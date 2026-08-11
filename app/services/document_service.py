@@ -49,7 +49,7 @@ class DocumentService:
             if saved_document:
                 document_file = DocumentFileCreate(
                     document_id=saved_document.id,
-                    provider=StorageProvider(self.settings.storage.provider),
+                    provider=StorageProvider(self.settings.storage.provider or "LOCAL"),
                     storage_key=storage_key,
                     original_filename=filename,
                     mime_type=mime_type,
