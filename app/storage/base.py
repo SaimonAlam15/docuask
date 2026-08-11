@@ -6,7 +6,7 @@ from .models import DocumentFileResult
 
 
 class StorageBackend(Protocol):
-    async def store(self, file: UploadFile, upload_directory: str) -> DocumentFileResult:
+    async def store(self, file: UploadFile) -> DocumentFileResult:
         pass
 
     async def exists(self, file_path: str) -> bool:

@@ -27,9 +27,9 @@ async def get_session(
         yield session
 
 
-def get_storage_backend() -> StorageBackend:
+def get_storage_backend(settings: Settings = Depends(get_settings)) -> StorageBackend:
     # TODO: set backend according to env
-    return LocalStorage()
+    return LocalStorage(settings.storage.upload_directory.get_secret_value())
 
 
 def get_document_repository(db: AsyncSession = Depends(get_session)) -> DocumentRepository:

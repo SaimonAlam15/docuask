@@ -16,15 +16,18 @@ logger = logging.getLogger(__name__)
 
 
 class LocalStorage(StorageBackend):
-    async def store(self, file: UploadFile, upload_directory: str) -> DocumentFileResult:
-        UPLOAD_DIR = Path(upload_directory)
+    def __init__(self, upload_directory: str):
+        self.upload_directory = upload_directory
+
+    async def store(self, file: UploadFile) -> DocumentFileResult:
+        UPLOAD_DIR = Path(self.upload_directory)
         UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
         file_id = str(uuid4())
         filename = file.filename
-        extension = filename.split(".")[-1]
+        extension = Path(filename).suffix
 
-        path = UPLOAD_DIR / f"{file_id[:2]}/{file_id[2:4]}/{file_id}.{extension}"
+        path = UPLOAD_DIR / f"{file_id[:2]}/{file_id[2:4]}/{file_id}{extension}"
         path.parent.mkdir(parents=True, exist_ok=True)
         sha256_hash = hashlib.sha256()
 

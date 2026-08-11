@@ -2,6 +2,8 @@ from uuid import UUID
 
 from pydantic import BaseModel
 
+from app.enums.storage_provider import StorageProvider
+
 
 class FileUploadResult(BaseModel):
     storage_key: str
@@ -13,7 +15,7 @@ class FileUploadResult(BaseModel):
 
 class DocumentFileCreate(BaseModel):
     document_id: UUID
-    provider: str
+    provider: StorageProvider
     bucket: str | None = None
     storage_key: str
     original_filename: str
