@@ -2,8 +2,8 @@ import logging
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models.document_file import DocumentFile
-from app.schemas.document_file import DocumentFileCreate
+from app.documents.models.document_file import DocumentFile
+from app.documents.schemas.document_file import DocumentFileCreate
 
 logger = logging.getLogger(__name__)
 

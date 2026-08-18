@@ -4,10 +4,10 @@ from fastapi import UploadFile
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config.settings import Settings
-from app.repositories.document_file_repository import DocumentFileRepository
-from app.repositories.document_repository import DocumentRepository
-from app.schemas.document import DocumentCreate, DocumentResponse
-from app.schemas.document_file import DocumentFileCreate
+from app.documents.repositories.document_file_repository import DocumentFileRepository
+from app.documents.repositories.document_repository import DocumentRepository
+from app.documents.schemas.document import DocumentCreate, DocumentResponse
+from app.documents.schemas.document_file import DocumentFileCreate
 from app.storage.base import StorageBackend
 
 logger = logging.getLogger(__name__)

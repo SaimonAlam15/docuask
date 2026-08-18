@@ -7,8 +7,6 @@ from sqlalchemy.ext.asyncio import (
 )
 
 from app.config import Settings
-from app.repositories.document_file_repository import DocumentFileRepository
-from app.repositories.document_repository import DocumentRepository
 from app.storage.base import StorageBackend
 from app.storage.local import LocalStorage
 
@@ -30,11 +28,3 @@ async def get_session(
 def get_storage_backend(settings: Settings = Depends(get_settings)) -> StorageBackend:
     # TODO: set backend according to env
     return LocalStorage(settings.storage.upload_directory.get_secret_value())
-
-
-def get_document_repository(db: AsyncSession = Depends(get_session)) -> DocumentRepository:
-    return DocumentRepository(db)
-
-
-def get_document_file_repository(db: AsyncSession = Depends(get_session)) -> DocumentFileRepository:
-    return DocumentFileRepository(db)
