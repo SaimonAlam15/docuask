@@ -11,6 +11,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.db.base import Base
 
 if TYPE_CHECKING:
+    from .document_content import DocumentContent
     from .document_file import DocumentFile
 
 
@@ -43,4 +44,8 @@ class Document(Base):
 
     files: Mapped[list[DocumentFile]] = relationship(
         back_populates="document", cascade="all, delete-orphan"
+    )
+
+    content: Mapped[DocumentContent | None] = relationship(
+        back_populates="document", cascade="all, delete-orphan", uselist=False
     )
