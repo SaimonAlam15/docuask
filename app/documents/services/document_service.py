@@ -4,9 +4,12 @@ from fastapi import UploadFile
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config.settings import Settings
+from app.documents.extraction.base import DocumentExtractor
+from app.documents.repositories.document_content_repository import DocumentContentRepository
 from app.documents.repositories.document_file_repository import DocumentFileRepository
 from app.documents.repositories.document_repository import DocumentRepository
 from app.documents.schemas.document import DocumentCreate, DocumentResponse
+from app.documents.schemas.document_content import DocumentContentCreate
 from app.documents.schemas.document_file import DocumentFileCreate
 from app.storage.base import StorageBackend
 
@@ -19,11 +22,15 @@ class DocumentService:
         session: AsyncSession,
         doc_repo: DocumentRepository,
         doc_file_repo: DocumentFileRepository,
+        doc_content_repo: DocumentContentRepository,
+        extractor: DocumentExtractor,
         settings: Settings,
     ):
         self.session = session
         self.doc_repo = doc_repo
         self.doc_file_repo = doc_file_repo
+        self.doc_content_repo = doc_content_repo
+        self.extractor = extractor
         self.settings = settings
 
     async def upload_file(
@@ -54,6 +61,15 @@ class DocumentService:
                     checksum=checksum,
                 )
                 saved_document_file = await self.doc_file_repo.create_document_file(document_file)
+
+                # Extract and save document content
+                logger.info("Extracting document text...")
+                extracted_content = self.extractor.extract_text(storage_key)
+                document_content = DocumentContentCreate(
+                    document_id=saved_document.id, content=extracted_content
+                )
+                await self.doc_content_repo.create_document_content(document_content)
+
                 await self.session.commit()
         except Exception as e:
             logger.exception("Upload error: %s", str(e))
