@@ -11,6 +11,7 @@ from app.db.base import Base
 from app.documents.models.document import Document
 from app.documents.models.document_file import DocumentFile
 from app.documents.models.document_content import DocumentContent
+from app.documents.models.document_chunk import DocumentChunk
 
 config = context.config
 
