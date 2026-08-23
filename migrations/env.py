@@ -8,7 +8,9 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 from app.config import Settings
 
 from app.db.base import Base
-import app.models
+from app.documents.models.document import Document
+from app.documents.models.document_file import DocumentFile
+from app.documents.models.document_content import DocumentContent
 
 config = context.config
 
