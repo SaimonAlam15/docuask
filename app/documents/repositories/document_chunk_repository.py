@@ -12,18 +12,23 @@ class DocumentChunkRepository:
     def __init__(self, db: AsyncSession):
         self.__db = db
 
-    async def create_document_chunk(self, chunks: list[DocumentChunkCreate]):
-        for chunk in chunks:
-            try:
-                db_document_chunk = DocumentChunk(
+    async def create_document_chunks(
+        self, chunks: list[DocumentChunkCreate]
+    ) -> list[DocumentChunk]:
+        db_chunks = []
+        try:
+            db_chunks = [
+                DocumentChunk(
                     document_content_id=chunk.document_content_id,
                     chunk_index=chunk.chunk_index,
                     content=chunk.content,
+                    embedding=chunk.embedding,
                 )
-                self.__db.add(db_document_chunk)
-                await self.__db.flush()
-                await self.__db.refresh(db_document_chunk)
-            except Exception as e:
-                logger.error("Failed to create DocumentChunk. Error: %s", str(e))
-                raise
-        return None
+                for chunk in chunks
+            ]
+            self.__db.add_all(db_chunks)
+            await self.__db.flush()
+        except Exception as e:
+            logger.error("Failed to create DocumentChunk. Error: %s", str(e))
+            raise
+        return db_chunks
