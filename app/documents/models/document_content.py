@@ -10,6 +10,8 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
 
+from .document_chunk import DocumentChunk
+
 if TYPE_CHECKING:
     from .document import Document
 
@@ -24,6 +26,12 @@ class DocumentContent(Base):
     document: Mapped[Document] = relationship(back_populates="content")
 
     content: Mapped[str] = mapped_column(Text, nullable=False)
+
+    chunks: Mapped[list[DocumentChunk]] = relationship(
+        back_populates="document_content",
+        cascade="all, delete-orphan",
+        order_by=DocumentChunk.chunk_index,
+    )
 
     created_at: Mapped[datetime] = mapped_column(
         TIMESTAMP(timezone=True), server_default=func.now(), nullable=False

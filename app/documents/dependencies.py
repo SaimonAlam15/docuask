@@ -6,8 +6,11 @@ from app.dependencies import (
     get_session,
     get_settings,
 )
+from app.documents.chunking.base import DocumentChunker
+from app.documents.chunking.fixed_size import FixedSizeChunker
 from app.documents.extraction.base import DocumentExtractor
 from app.documents.extraction.pdf import PDFExtractor
+from app.documents.repositories.document_chunk_repository import DocumentChunkRepository
 from app.documents.repositories.document_content_repository import DocumentContentRepository
 from app.documents.repositories.document_file_repository import DocumentFileRepository
 from app.documents.repositories.document_repository import DocumentRepository
@@ -28,8 +31,18 @@ def get_document_content_repository(
     return DocumentContentRepository(db)
 
 
+def get_document_chunk_repository(
+    db: AsyncSession = Depends(get_session),
+) -> DocumentChunkRepository:
+    return DocumentChunkRepository(db)
+
+
 def get_pdf_extractor() -> PDFExtractor:
     return PDFExtractor()
+
+
+def get_fixed_size_chunker() -> FixedSizeChunker:
+    return FixedSizeChunker()
 
 
 def get_document_service(
@@ -37,7 +50,18 @@ def get_document_service(
     doc_repo: DocumentRepository = Depends(get_document_repository),
     doc_file_repo: DocumentFileRepository = Depends(get_document_file_repository),
     doc_content_repo: DocumentContentRepository = Depends(get_document_content_repository),
+    doc_chunk_repo: DocumentChunkRepository = Depends(get_document_chunk_repository),
     extractor: DocumentExtractor = Depends(get_pdf_extractor),
+    chunker: DocumentChunker = Depends(get_fixed_size_chunker),
     settings: Settings = Depends(get_settings),
 ) -> DocumentService:
-    return DocumentService(session, doc_repo, doc_file_repo, doc_content_repo, extractor, settings)
+    return DocumentService(
+        session,
+        doc_repo,
+        doc_file_repo,
+        doc_content_repo,
+        doc_chunk_repo,
+        extractor,
+        chunker,
+        settings,
+    )
