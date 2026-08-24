@@ -5,6 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config.settings import Settings
 from app.documents.chunking.base import DocumentChunker
+from app.documents.embeddings.base import EmbeddingProvider
 from app.documents.extraction.base import DocumentExtractor
 from app.documents.repositories.document_chunk_repository import DocumentChunkRepository
 from app.documents.repositories.document_content_repository import DocumentContentRepository
@@ -29,6 +30,7 @@ class DocumentService:
         doc_chunk_repo: DocumentChunkRepository,
         extractor: DocumentExtractor,
         chunker: DocumentChunker,
+        embedding_provider: EmbeddingProvider,
         settings: Settings,
     ):
         self.session = session
@@ -38,6 +40,7 @@ class DocumentService:
         self.doc_chunk_repo = doc_chunk_repo
         self.extractor = extractor
         self.chunker = chunker
+        self.embedding_provider = embedding_provider
         self.settings = settings
 
     async def upload_file(
@@ -82,15 +85,19 @@ class DocumentService:
                 # Chunk the extracted content
                 logger.info("Chunking document content...")
                 chunks = self.chunker.chunk(extracted_content)
-                document_chunks = [
-                    DocumentChunkCreate(
-                        document_content_id=saved_document_content.id,
-                        content=chunk,
-                        chunk_index=idx + 1,
+                document_chunks = []
+                for idx, chunk in enumerate(chunks):
+                    embeddings = await self.embedding_provider.embed(chunk)
+                    document_chunks.append(
+                        DocumentChunkCreate(
+                            document_content_id=saved_document_content.id,
+                            content=chunk,
+                            chunk_index=idx + 1,
+                            embedding=embeddings,
+                        )
                     )
-                    for idx, chunk in enumerate(chunks)
-                ]
-                await self.doc_chunk_repo.create_document_chunk(document_chunks)
+
+                await self.doc_chunk_repo.create_document_chunks(document_chunks)
 
                 await self.session.commit()
         except Exception as e:

@@ -8,6 +8,8 @@ from app.dependencies import (
 )
 from app.documents.chunking.base import DocumentChunker
 from app.documents.chunking.fixed_size import FixedSizeChunker
+from app.documents.embeddings.base import EmbeddingProvider
+from app.documents.embeddings.openai import OpenAIEmbeddingProvider
 from app.documents.extraction.base import DocumentExtractor
 from app.documents.extraction.pdf import PDFExtractor
 from app.documents.repositories.document_chunk_repository import DocumentChunkRepository
@@ -45,6 +47,12 @@ def get_fixed_size_chunker() -> FixedSizeChunker:
     return FixedSizeChunker()
 
 
+def get_openai_embedding_provider(
+    settings: Settings = Depends(get_settings),
+) -> OpenAIEmbeddingProvider:
+    return OpenAIEmbeddingProvider(settings.openai.api_key.get_secret_value())
+
+
 def get_document_service(
     session: AsyncSession = Depends(get_session),
     doc_repo: DocumentRepository = Depends(get_document_repository),
@@ -53,6 +61,7 @@ def get_document_service(
     doc_chunk_repo: DocumentChunkRepository = Depends(get_document_chunk_repository),
     extractor: DocumentExtractor = Depends(get_pdf_extractor),
     chunker: DocumentChunker = Depends(get_fixed_size_chunker),
+    embedding_provider: EmbeddingProvider = Depends(get_openai_embedding_provider),
     settings: Settings = Depends(get_settings),
 ) -> DocumentService:
     return DocumentService(
@@ -63,5 +72,6 @@ def get_document_service(
         doc_chunk_repo,
         extractor,
         chunker,
+        embedding_provider,
         settings,
     )
