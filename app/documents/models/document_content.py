@@ -10,9 +10,10 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
 
+from .document_chunk import DocumentChunk
+
 if TYPE_CHECKING:
     from .document import Document
-    from .document_chunk import DocumentChunk
 
 
 class DocumentContent(Base):
@@ -29,7 +30,7 @@ class DocumentContent(Base):
     chunks: Mapped[list[DocumentChunk]] = relationship(
         back_populates="document_content",
         cascade="all, delete-orphan",
-        order_by="DocumentChunk.chunk_index",
+        order_by=DocumentChunk.chunk_index,
     )
 
     created_at: Mapped[datetime] = mapped_column(

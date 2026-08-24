@@ -4,11 +4,14 @@ from fastapi import UploadFile
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config.settings import Settings
+from app.documents.chunking.base import DocumentChunker
 from app.documents.extraction.base import DocumentExtractor
+from app.documents.repositories.document_chunk_repository import DocumentChunkRepository
 from app.documents.repositories.document_content_repository import DocumentContentRepository
 from app.documents.repositories.document_file_repository import DocumentFileRepository
 from app.documents.repositories.document_repository import DocumentRepository
 from app.documents.schemas.document import DocumentCreate, DocumentResponse
+from app.documents.schemas.document_chunk import DocumentChunkCreate
 from app.documents.schemas.document_content import DocumentContentCreate
 from app.documents.schemas.document_file import DocumentFileCreate
 from app.storage.base import StorageBackend
@@ -23,14 +26,18 @@ class DocumentService:
         doc_repo: DocumentRepository,
         doc_file_repo: DocumentFileRepository,
         doc_content_repo: DocumentContentRepository,
+        doc_chunk_repo: DocumentChunkRepository,
         extractor: DocumentExtractor,
+        chunker: DocumentChunker,
         settings: Settings,
     ):
         self.session = session
         self.doc_repo = doc_repo
         self.doc_file_repo = doc_file_repo
         self.doc_content_repo = doc_content_repo
+        self.doc_chunk_repo = doc_chunk_repo
         self.extractor = extractor
+        self.chunker = chunker
         self.settings = settings
 
     async def upload_file(
@@ -68,7 +75,22 @@ class DocumentService:
                 document_content = DocumentContentCreate(
                     document_id=saved_document.id, content=extracted_content
                 )
-                await self.doc_content_repo.create_document_content(document_content)
+                saved_document_content = await self.doc_content_repo.create_document_content(
+                    document_content
+                )
+
+                # Chunk the extracted content
+                logger.info("Chunking document content...")
+                chunks = self.chunker.chunk(extracted_content)
+                document_chunks = [
+                    DocumentChunkCreate(
+                        document_content_id=saved_document_content.id,
+                        content=chunk,
+                        chunk_index=idx + 1,
+                    )
+                    for idx, chunk in enumerate(chunks)
+                ]
+                await self.doc_chunk_repo.create_document_chunk(document_chunks)
 
                 await self.session.commit()
         except Exception as e:
