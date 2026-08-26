@@ -86,14 +86,14 @@ class DocumentService:
                 logger.info("Chunking document content...")
                 chunks = self.chunker.chunk(extracted_content)
                 document_chunks = []
+                embeddings = await self.embedding_provider.embed(chunks)
                 for idx, chunk in enumerate(chunks):
-                    embeddings = await self.embedding_provider.embed(chunk)
                     document_chunks.append(
                         DocumentChunkCreate(
                             document_content_id=saved_document_content.id,
                             content=chunk,
-                            chunk_index=idx + 1,
-                            embedding=embeddings,
+                            chunk_index=idx,
+                            embedding=embeddings[idx],
                         )
                     )
 

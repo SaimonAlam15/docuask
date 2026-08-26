@@ -50,7 +50,9 @@ def get_fixed_size_chunker() -> FixedSizeChunker:
 def get_openai_embedding_provider(
     settings: Settings = Depends(get_settings),
 ) -> OpenAIEmbeddingProvider:
-    return OpenAIEmbeddingProvider(settings.openai.api_key.get_secret_value())
+    return OpenAIEmbeddingProvider(
+        settings.openai.api_key.get_secret_value(), settings.openai.embedding_model
+    )
 
 
 def get_document_service(
