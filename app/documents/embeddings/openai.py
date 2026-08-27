@@ -7,10 +7,10 @@ class OpenAIEmbeddingProvider:
         self.__embedding_model = embedding_model
         self.__client = AsyncOpenAI(api_key=self.__api_key)
 
-    async def embed(self, text: list[str]) -> list[float]:
+    async def embed(self, texts: list[str]) -> list[float]:
         response = await self.__client.embeddings.create(
             model=self.__embedding_model,
-            input=text,
+            input=texts,
         )
 
         # Extract the float array vector
