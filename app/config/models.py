@@ -45,3 +45,4 @@ class OpenAIConfig(BaseModel):
     model_config = ConfigDict(frozen=True)
 
     api_key: SecretStr
+    embedding_model: str
