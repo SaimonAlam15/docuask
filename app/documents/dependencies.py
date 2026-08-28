@@ -17,6 +17,7 @@ from app.documents.repositories.document_content_repository import DocumentConte
 from app.documents.repositories.document_file_repository import DocumentFileRepository
 from app.documents.repositories.document_repository import DocumentRepository
 from app.documents.services.document_service import DocumentService
+from app.documents.services.semantic_search_service import SemanticSearchService
 
 
 def get_document_repository(db: AsyncSession = Depends(get_session)) -> DocumentRepository:
@@ -77,3 +78,11 @@ def get_document_service(
         embedding_provider,
         settings,
     )
+
+
+def get_semantic_search_service(
+    session: AsyncSession = Depends(get_session),
+    chunk_repo: DocumentChunkRepository = Depends(get_document_chunk_repository),
+    embedding_provider: EmbeddingProvider = Depends(get_openai_embedding_provider),
+) -> SemanticSearchService:
+    return SemanticSearchService(session, chunk_repo, embedding_provider)

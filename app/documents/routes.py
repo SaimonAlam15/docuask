@@ -3,9 +3,9 @@ import logging
 from fastapi import APIRouter, Depends, File, UploadFile
 
 from app.dependencies import get_storage_backend
+from app.documents.dependencies import get_document_service
 from app.documents.schemas.document import DocumentCreate
 from app.documents.services.document_service import DocumentService
-from app.services.dependencies import get_document_service
 from app.storage.base import StorageBackend
 
 logger = logging.getLogger(__name__)
