@@ -4,19 +4,19 @@ from datetime import datetime
 from typing import TYPE_CHECKING
 from uuid import UUID, uuid4
 
-from sqlalchemy import TIMESTAMP, ForeignKey, String, func
+from sqlalchemy import TIMESTAMP, String, func
 from sqlalchemy.dialects.postgresql import UUID as PGUUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
+from app.documents.models.document import Document
 
 if TYPE_CHECKING:
-    from .document_content import DocumentContent
-    from .document_file import DocumentFile
+    pass
 
 
-class Document(Base):
-    __tablename__ = "documents"
+class User(Base):
+    __tablename__ = "users"
 
     id: Mapped[UUID] = mapped_column(
         PGUUID(as_uuid=True),
@@ -24,9 +24,17 @@ class Document(Base):
         default=uuid4,
     )
 
-    user_id: Mapped[UUID] = mapped_column(ForeignKey("users.id"), nullable=True)
+    first_name: Mapped[str] = mapped_column(
+        String(255),
+        nullable=False,
+    )
 
-    title: Mapped[str] = mapped_column(
+    last_name: Mapped[str] = mapped_column(
+        String(255),
+        nullable=False,
+    )
+
+    email: Mapped[str] = mapped_column(
         String(255),
         nullable=False,
     )
@@ -44,10 +52,6 @@ class Document(Base):
         nullable=False,
     )
 
-    files: Mapped[list[DocumentFile]] = relationship(
-        back_populates="document", cascade="all, delete-orphan"
-    )
-
-    content: Mapped[DocumentContent | None] = relationship(
-        back_populates="document", cascade="all, delete-orphan", uselist=False
+    documents: Mapped[list[Document]] = relationship(
+        back_populates="user", cascade="all, delete-orphan"
     )
