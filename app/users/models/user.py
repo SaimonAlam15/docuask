@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING
 from uuid import UUID, uuid4
 
-from sqlalchemy import TIMESTAMP, String, func
+from sqlalchemy import TIMESTAMP, String, UniqueConstraint, func
 from sqlalchemy.dialects.postgresql import UUID as PGUUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -55,3 +55,5 @@ class User(Base):
     documents: Mapped[list[Document]] = relationship(
         back_populates="user", cascade="all, delete-orphan"
     )
+
+    __table_args__ = (UniqueConstraint("email"),)
