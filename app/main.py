@@ -6,7 +6,7 @@ from fastapi import FastAPI
 from app.api.routes import health
 from app.config import Settings
 from app.db.session import create_engine, create_session_factory
-from app.documents import document_routes
+from app.documents import document_routes, search_routes
 from app.logging import configure_logging
 
 logger = logging.getLogger(__name__)
@@ -40,3 +40,4 @@ app = FastAPI(
 
 app.include_router(health.router)
 app.include_router(document_routes.router)
+app.include_router(search_routes.router)

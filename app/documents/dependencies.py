@@ -81,8 +81,7 @@ def get_document_service(
 
 
 def get_semantic_search_service(
-    session: AsyncSession = Depends(get_session),
     chunk_repo: DocumentChunkRepository = Depends(get_document_chunk_repository),
     embedding_provider: EmbeddingProvider = Depends(get_openai_embedding_provider),
 ) -> SemanticSearchService:
-    return SemanticSearchService(session, chunk_repo, embedding_provider)
+    return SemanticSearchService(chunk_repo, embedding_provider)
