@@ -1,3 +1,4 @@
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.documents.models.document_chunk import DocumentChunk
@@ -23,3 +24,13 @@ class DocumentChunkRepository:
         self.__db.add_all(db_chunks)
         await self.__db.flush()
         return db_chunks
+
+    async def find_similar_chunks(
+        self, query_embedding: list[float], limit: int = 5
+    ) -> list[tuple[DocumentChunk, float]]:
+        distance_expr = DocumentChunk.embedding.cosine_distance(query_embedding)
+
+        stmt = select(DocumentChunk, distance_expr).order_by(distance_expr.asc()).limit(limit)
+
+        result = await self.__db.execute(stmt)
+        return result.all()
