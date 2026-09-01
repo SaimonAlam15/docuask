@@ -9,10 +9,9 @@ from sqlalchemy.dialects.postgresql import UUID as PGUUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
-from app.documents.models.document import Document
 
 if TYPE_CHECKING:
-    pass
+    from app.documents.models.document import Document
 
 
 class User(Base):

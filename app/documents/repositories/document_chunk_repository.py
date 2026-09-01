@@ -30,7 +30,7 @@ class DocumentChunkRepository:
         return db_chunks
 
     async def find_similar_chunks(
-        self, query_embedding: list[float], limit: int = 5, user_id: UUID = None
+        self, query_embedding: list[float], user_id: UUID, limit: int = 5
     ) -> list[tuple[DocumentChunk, float]]:
         distance_expr = DocumentChunk.embedding.cosine_distance(query_embedding)
 
@@ -38,13 +38,10 @@ class DocumentChunkRepository:
             select(DocumentChunk, distance_expr)
             .join(DocumentContent, DocumentContent.id == DocumentChunk.document_content_id)
             .join(Document, Document.id == DocumentContent.document_id)
-            .where(Document.user_id.is_not(None))
+            .where(Document.user_id == user_id)
+            .order_by(distance_expr.asc())
+            .limit(limit)
         )
-
-        if user_id:
-            stmt = stmt.where(Document.user_id == UUID(user_id))
-
-        stmt = stmt.order_by(distance_expr.asc()).limit(limit)
 
         result = await self.__db.execute(stmt)
         return result.all()
