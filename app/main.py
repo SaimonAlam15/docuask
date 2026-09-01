@@ -8,6 +8,7 @@ from app.config import Settings
 from app.db.session import create_engine, create_session_factory
 from app.documents import document_routes, search_routes
 from app.logging import configure_logging
+from app.db import models
 
 logger = logging.getLogger(__name__)
 
