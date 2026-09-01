@@ -28,7 +28,7 @@ class Document(Base):
 
     user_id: Mapped[UUID] = mapped_column(ForeignKey("users.id"), nullable=True)
 
-    user: Mapped[User] = relationship(back_populates="Documents")
+    user: Mapped[User] = relationship(back_populates="documents")
 
     title: Mapped[str] = mapped_column(
         String(255),
