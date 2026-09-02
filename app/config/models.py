@@ -46,3 +46,4 @@ class OpenAIConfig(BaseModel):
 
     api_key: SecretStr
     embedding_model: str
+    llm_model: str
