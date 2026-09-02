@@ -11,7 +11,7 @@ class OpenAILLMProvider:
         response = await self.__client.chat.completions.create(
             model=self.__model,
             messages=[
-                {"role": "system", "content": "You are a helpful assistantl"},
+                {"role": "system", "content": "You are a helpful assistant."},
                 {"role": "user", "content": prompt},
             ],
             temperature=0.7,

@@ -10,15 +10,19 @@ class QuestionAnsweringService:
     async def answer(self, question: str) -> str:
         search_results = await self.search_service.embed_and_search(question)
 
+        if not search_results:
+            return "No context found."
+
         context = "\n\n".join(result.content for result, _ in search_results)
 
-        prompt = f"""Answer the user's question using only the provided context.
+        prompt = f"""
+Answer the user's question using only the provided context.
         
-        Context: 
-        {context}
+Context: 
+{context}
 
-        Question:
-        {question}
+Question:
+{question}
         """
 
         return await self.llm_provider.generate(prompt)
