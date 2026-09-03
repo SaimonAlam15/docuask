@@ -13,11 +13,18 @@ class QuestionAnsweringService:
         if not search_results:
             return "No context found."
 
-        context = "\n\n".join(result.content for result, _ in search_results)
+        context = [
+            {
+                "content": result.content,
+                "document_content_id": result.document_content_id,
+                "chunk_index": result.chunk_index,
+            }
+            for result, _ in search_results
+        ]
 
         prompt = f"""
-Answer the user's question using only the provided context.
-        
+Answer the user's question using only the provided context which is in the form of a list of objects.
+Once you have an answer, return it in the given json format.
 Context: 
 {context}
 

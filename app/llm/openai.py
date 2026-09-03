@@ -1,5 +1,7 @@
 from openai import AsyncOpenAI
 
+from app.llm.schemas.answer import LLMResponse
+
 
 class OpenAILLMProvider:
     def __init__(self, api_key: str, model: str):
@@ -7,13 +9,12 @@ class OpenAILLMProvider:
         self.__client = AsyncOpenAI(api_key=self.__api_key)
         self.__model = model
 
-    async def generate(self, prompt: str) -> str:
-        response = await self.__client.chat.completions.create(
+    async def generate(self, prompt: str) -> LLMResponse:
+        response = await self.__client.beta.chat.completions.parse(
             model=self.__model,
             messages=[
-                {"role": "system", "content": "You are a helpful assistant."},
                 {"role": "user", "content": prompt},
             ],
-            temperature=0.7,
+            response_format=LLMResponse,
         )
-        return response.choices[0].message.content
+        return response.choices[0].message.parsed
