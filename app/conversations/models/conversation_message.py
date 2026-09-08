@@ -4,11 +4,13 @@ from datetime import datetime
 from typing import TYPE_CHECKING
 from uuid import UUID, uuid4
 
-from sqlalchemy import TIMESTAMP, ForeignKey, String, func
+from sqlalchemy import TIMESTAMP, ForeignKey, String, Text, func
+from sqlalchemy.dialects.postgresql import ENUM as PGENUM
 from sqlalchemy.dialects.postgresql import UUID as PGUUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
+from app.enums.conversation import ConversationMessageRole
 
 if TYPE_CHECKING:
     from app.conversations.models.conversation import Conversation
@@ -27,13 +29,14 @@ class ConversationMessage(Base):
 
     conversation: Mapped[Conversation] = relationship(back_populates="conversation_messages")
 
-    role: Mapped[str] = mapped_column(
-        String(255),
+    role: Mapped[ConversationMessageRole] = mapped_column(
+        PGENUM(ConversationMessageRole, name="conversation_message_role"),
+        default=ConversationMessageRole.USER,
         nullable=False,
     )
 
     content: Mapped[str] = mapped_column(
-        String(255),
+        Text,
         nullable=False,
     )
 
