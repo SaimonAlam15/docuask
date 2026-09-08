@@ -1,5 +1,6 @@
 from app.documents.services.semantic_search_service import SemanticSearchService
 from app.llm.base import LLMProvider
+from app.llm.schemas.answer import LLMResponse
 
 
 class QuestionAnsweringService:
@@ -7,7 +8,7 @@ class QuestionAnsweringService:
         self.llm_provider = llm_provider
         self.search_service = search_service
 
-    async def answer(self, question: str) -> str:
+    async def answer(self, question: str) -> LLMResponse:
         search_results = await self.search_service.embed_and_search(question)
 
         if not search_results:
