@@ -22,7 +22,7 @@ class QuestionAnsweringService:
         self.search_service = search_service
         self.conversation_service = conversation_service
 
-    async def answer(self, question: str, conversation_id: UUID = None) -> LLMResponse:
+    async def answer(self, question: str, conversation_id: UUID | None = None) -> LLMResponse:
         if not conversation_id:
             # Create conversation
             conversation_id = await self.conversation_service.create_conversation(

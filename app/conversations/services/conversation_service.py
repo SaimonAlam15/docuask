@@ -18,7 +18,7 @@ class ConversationService:
     async def create_conversation(
         self,
         user_id: UUID,
-        title: str = None,
+        title: str | None = None,
     ):
         db_conversation = await self.__conversation_repo.create_conversation(
             ConversationCreate(title=title, user_id=user_id)

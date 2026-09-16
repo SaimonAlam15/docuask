@@ -20,9 +20,9 @@ def get_conversation_message_repository(
 
 
 def get_conversation_service(
-    conversatino_repository: ConversationRepository = Depends(get_conversation_repository),
+    conversation_repository: ConversationRepository = Depends(get_conversation_repository),
     conversation_message_repository: ConversationMessageRepository = Depends(
         get_conversation_message_repository
     ),
 ) -> ConversationService:
-    return ConversationService(conversatino_repository, conversation_message_repository)
+    return ConversationService(conversation_repository, conversation_message_repository)
