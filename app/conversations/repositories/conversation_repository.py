@@ -18,12 +18,16 @@ class ConversationRepository:
         await self.__db.refresh(db_conversation)
         return db_conversation
 
-    async def get_conversation_by_id(self, conversation_id: UUID):
-        query = select(Conversation).where(Conversation.id == conversation_id)
+    async def get_conversation_by_id(
+        self, conversation_id: UUID, user_id: UUID
+    ) -> Conversation | None:
+        query = select(Conversation).where(
+            Conversation.id == conversation_id, Conversation.user_id == user_id
+        )
         result = await self.__db.execute(query)
         return result.scalar_one_or_none()
 
-    async def get_conversations_by_user_id(self, user_id: UUID):
+    async def get_conversations_by_user_id(self, user_id: UUID) -> list[Conversation] | None:
         query = select(Conversation).where(Conversation.user_id == user_id)
         result = await self.__db.execute(query)
-        return result.all()
+        return result.scalars().all()

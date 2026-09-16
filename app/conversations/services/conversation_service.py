@@ -1,5 +1,6 @@
 from uuid import UUID
 
+from app.conversations.models.conversation_message import ConversationMessage
 from app.conversations.repositories.conversation_message_repository import (
     ConversationMessageRepository,
 )
@@ -14,22 +15,29 @@ class ConversationService:
         self.__conversation_repo = repo
         self.__message_repo = message_repo
 
-    async def mnanage_conversation(
+    async def create_conversation(
         self,
         user_id: UUID,
-        role: ConversationMessageRole,
-        content: str,
-        conversation_id: UUID = None,
         title: str = None,
     ):
-        if not conversation_id:
-            db_conversation = await self.__conversation_repo.create_conversation(
-                ConversationCreate(title=title, user_id=user_id)
-            )
-            conversation_id = db_conversation.id
+        db_conversation = await self.__conversation_repo.create_conversation(
+            ConversationCreate(title=title, user_id=user_id)
+        )
+        conversation_id = db_conversation.id
 
+        return conversation_id
+
+    async def add_message(
+        self,
+        conversation_id: UUID,
+        role: ConversationMessageRole,
+        content: str,
+    ):
         await self.__message_repo.create_conversation_message(
             ConversationMessageCreate(conversation_id=conversation_id, role=role, content=content)
         )
 
-        return conversation_id
+    async def get_conversation_messages(
+        self, conversation_id: UUID
+    ) -> list[ConversationMessage] | None:
+        return await self.__message_repo.get_messages_by_conversation_id(conversation_id)

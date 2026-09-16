@@ -25,18 +25,18 @@ class QuestionAnsweringService:
     async def answer(self, question: str, conversation_id: UUID = None) -> LLMResponse:
         if not conversation_id:
             # Create conversation
-            conversation_id = await self.conversation_service.mnanage_conversation(
+            conversation_id = await self.conversation_service.create_conversation(
                 user_id=UUID("77b03295-6eab-4d37-9429-2eeef614f278"),
+            )
+            await self.conversation_service.add_message(
+                conversation_id=conversation_id,
                 role=ConversationMessageRole.USER,
                 content=question,
             )
         else:
             # Save question as conversation message
-            await self.conversation_service.mnanage_conversation(
-                user_id=UUID("77b03295-6eab-4d37-9429-2eeef614f278"),
-                role=ConversationMessageRole.USER,
-                content=question,
-                conversation_id=conversation_id,
+            await self.conversation_service.add_message(
+                conversation_id=conversation_id, role=ConversationMessageRole.USER, content=question
             )
         search_results = await self.search_service.embed_and_search(question)
 
@@ -65,11 +65,10 @@ Question:
         llm_response = await self.llm_provider.generate(prompt)
 
         # Save answer as conversation message
-        await self.conversation_service.mnanage_conversation(
-            user_id=UUID("77b03295-6eab-4d37-9429-2eeef614f278"),
+        await self.conversation_service.add_message(
+            conversation_id=conversation_id,
             role=ConversationMessageRole.ASSISTANT,
             content=llm_response.answer,
-            conversation_id=conversation_id,
         )
 
         await self.session.commit()
