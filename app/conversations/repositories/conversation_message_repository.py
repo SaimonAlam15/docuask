@@ -11,7 +11,9 @@ class ConversationMessageRepository:
     def __init__(self, db: AsyncSession):
         self.__db = db
 
-    async def create_conversation_message(self, conversation_message: ConversationMessageCreate):
+    async def create_conversation_message(
+        self, conversation_message: ConversationMessageCreate
+    ) -> ConversationMessage:
         db_conversation_message = ConversationMessage(
             conversation_id=conversation_message.conversation_id,
             role=conversation_message.role,
@@ -22,14 +24,16 @@ class ConversationMessageRepository:
         await self.__db.refresh(db_conversation_message)
         return db_conversation_message
 
-    async def get_conversation_message_by_id(self, conversation_message_id: UUID):
+    async def get_conversation_message_by_id(
+        self, conversation_message_id: UUID
+    ) -> ConversationMessage | None:
         query = select(ConversationMessage).where(ConversationMessage.id == conversation_message_id)
         result = await self.__db.execute(query)
         return result.scalar_one_or_none()
 
     async def get_messages_by_conversation_id(
         self, conversation_id: UUID
-    ) -> list[ConversationMessage] | None:
+    ) -> list[ConversationMessage]:
         query = (
             select(ConversationMessage)
             .where(ConversationMessage.conversation_id == conversation_id)

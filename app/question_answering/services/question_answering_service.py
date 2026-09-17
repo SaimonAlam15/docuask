@@ -12,11 +12,13 @@ from app.llm.schemas.answer import LLMResponse
 class QuestionAnsweringService:
     def __init__(
         self,
+        user_id: UUID,
         session: AsyncSession,
         llm_provider: LLMProvider,
         search_service: SemanticSearchService,
         conversation_service: ConversationService,
     ):
+        self.user_id = user_id
         self.session = session
         self.llm_provider = llm_provider
         self.search_service = search_service
@@ -26,7 +28,7 @@ class QuestionAnsweringService:
         if not conversation_id:
             # Create conversation
             conversation_id = await self.conversation_service.create_conversation(
-                user_id=UUID("77b03295-6eab-4d37-9429-2eeef614f278"),
+                user_id=self.user_id,
             )
             await self.conversation_service.add_message(
                 conversation_id=conversation_id,
@@ -36,7 +38,10 @@ class QuestionAnsweringService:
         else:
             # Save question as conversation message
             await self.conversation_service.add_message(
-                conversation_id=conversation_id, role=ConversationMessageRole.USER, content=question
+                conversation_id=conversation_id,
+                user_id=self.user_id,
+                role=ConversationMessageRole.USER,
+                content=question,
             )
         search_results = await self.search_service.embed_and_search(question)
 
@@ -67,6 +72,7 @@ Question:
         # Save answer as conversation message
         await self.conversation_service.add_message(
             conversation_id=conversation_id,
+            user_id=self.user_id,
             role=ConversationMessageRole.ASSISTANT,
             content=llm_response.answer,
         )

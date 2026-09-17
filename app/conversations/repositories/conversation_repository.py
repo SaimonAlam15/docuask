@@ -11,7 +11,7 @@ class ConversationRepository:
     def __init__(self, db: AsyncSession):
         self.__db = db
 
-    async def create_conversation(self, conversation: ConversationCreate):
+    async def create_conversation(self, conversation: ConversationCreate) -> Conversation:
         db_conversation = Conversation(title=conversation.title, user_id=conversation.user_id)
         self.__db.add(db_conversation)
         await self.__db.flush()
@@ -27,7 +27,7 @@ class ConversationRepository:
         result = await self.__db.execute(query)
         return result.scalar_one_or_none()
 
-    async def get_conversations_by_user_id(self, user_id: UUID) -> list[Conversation] | None:
+    async def get_conversations_by_user_id(self, user_id: UUID) -> list[Conversation]:
         query = select(Conversation).where(Conversation.user_id == user_id)
         result = await self.__db.execute(query)
         return result.scalars().all()

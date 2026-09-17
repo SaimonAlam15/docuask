@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -24,4 +26,10 @@ def get_question_answering_service(
     search_service: SemanticSearchService = Depends(get_semantic_search_service),
     conversation_service: ConversationService = Depends(get_conversation_service),
 ) -> QuestionAnsweringService:
-    return QuestionAnsweringService(session, llm_provider, search_service, conversation_service)
+    return QuestionAnsweringService(
+        UUID("77b03295-6eab-4d37-9429-2eeef614f278"),
+        session,
+        llm_provider,
+        search_service,
+        conversation_service,
+    )
