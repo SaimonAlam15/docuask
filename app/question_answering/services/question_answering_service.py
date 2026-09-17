@@ -1,14 +1,49 @@
+from uuid import UUID
+
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.conversations.services.conversation_service import ConversationService
 from app.documents.services.semantic_search_service import SemanticSearchService
+from app.enums.conversation import ConversationMessageRole
 from app.llm.base import LLMProvider
 from app.llm.schemas.answer import LLMResponse
 
 
 class QuestionAnsweringService:
-    def __init__(self, llm_provider: LLMProvider, search_service: SemanticSearchService):
+    def __init__(
+        self,
+        user_id: UUID,
+        session: AsyncSession,
+        llm_provider: LLMProvider,
+        search_service: SemanticSearchService,
+        conversation_service: ConversationService,
+    ):
+        self.user_id = user_id
+        self.session = session
         self.llm_provider = llm_provider
         self.search_service = search_service
+        self.conversation_service = conversation_service
 
-    async def answer(self, question: str) -> LLMResponse:
+    async def answer(self, question: str, conversation_id: UUID | None = None) -> LLMResponse:
+        if not conversation_id:
+            # Create conversation
+            conversation_id = await self.conversation_service.create_conversation(
+                user_id=self.user_id,
+            )
+            await self.conversation_service.add_message(
+                conversation_id=conversation_id,
+                user_id=self.user_id,
+                role=ConversationMessageRole.USER,
+                content=question,
+            )
+        else:
+            # Save question as conversation message
+            await self.conversation_service.add_message(
+                conversation_id=conversation_id,
+                user_id=self.user_id,
+                role=ConversationMessageRole.USER,
+                content=question,
+            )
         search_results = await self.search_service.embed_and_search(question)
 
         if not search_results:
@@ -33,4 +68,16 @@ Question:
 {question}
         """
 
-        return await self.llm_provider.generate(prompt)
+        llm_response = await self.llm_provider.generate(prompt)
+
+        # Save answer as conversation message
+        await self.conversation_service.add_message(
+            conversation_id=conversation_id,
+            user_id=self.user_id,
+            role=ConversationMessageRole.ASSISTANT,
+            content=llm_response.answer,
+        )
+
+        await self.session.commit()
+
+        return llm_response

@@ -4,19 +4,20 @@ from datetime import datetime
 from typing import TYPE_CHECKING
 from uuid import UUID, uuid4
 
-from sqlalchemy import TIMESTAMP, String, UniqueConstraint, func
+from sqlalchemy import TIMESTAMP, ForeignKey, String, Text, func
+from sqlalchemy.dialects.postgresql import ENUM as PGENUM
 from sqlalchemy.dialects.postgresql import UUID as PGUUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
+from app.enums.conversation import ConversationMessageRole
 
 if TYPE_CHECKING:
     from app.conversations.models.conversation import Conversation
-    from app.documents.models.document import Document
 
 
-class User(Base):
-    __tablename__ = "users"
+class ConversationMessage(Base):
+    __tablename__ = "conversation_messages"
 
     id: Mapped[UUID] = mapped_column(
         PGUUID(as_uuid=True),
@@ -24,18 +25,18 @@ class User(Base):
         default=uuid4,
     )
 
-    first_name: Mapped[str] = mapped_column(
-        String(255),
+    conversation_id: Mapped[UUID] = mapped_column(ForeignKey("conversations.id"), nullable=False)
+
+    conversation: Mapped[Conversation] = relationship(back_populates="conversation_messages")
+
+    role: Mapped[ConversationMessageRole] = mapped_column(
+        PGENUM(ConversationMessageRole, name="conversation_message_role"),
+        default=ConversationMessageRole.USER,
         nullable=False,
     )
 
-    last_name: Mapped[str] = mapped_column(
-        String(255),
-        nullable=False,
-    )
-
-    email: Mapped[str] = mapped_column(
-        String(255),
+    content: Mapped[str] = mapped_column(
+        Text,
         nullable=False,
     )
 
@@ -51,13 +52,3 @@ class User(Base):
         onupdate=func.now(),
         nullable=False,
     )
-
-    documents: Mapped[list[Document]] = relationship(
-        back_populates="user", cascade="all, delete-orphan"
-    )
-
-    conversations: Mapped[list[Conversation]] = relationship(
-        back_populates="user", cascade="all, delete-orphan"
-    )
-
-    __table_args__ = (UniqueConstraint("email"),)

@@ -1,7 +1,12 @@
+from uuid import UUID
+
 from fastapi import Depends
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config.settings import Settings
-from app.dependencies import get_settings
+from app.conversations.dependencies import get_conversation_service
+from app.conversations.services.conversation_service import ConversationService
+from app.dependencies import get_session, get_settings
 from app.documents.dependencies import get_semantic_search_service
 from app.documents.services.semantic_search_service import SemanticSearchService
 from app.llm.base import LLMProvider
@@ -16,7 +21,15 @@ def get_openai_llm_provider(
 
 
 def get_question_answering_service(
+    session: AsyncSession = Depends(get_session),
     llm_provider: LLMProvider = Depends(get_openai_llm_provider),
     search_service: SemanticSearchService = Depends(get_semantic_search_service),
+    conversation_service: ConversationService = Depends(get_conversation_service),
 ) -> QuestionAnsweringService:
-    return QuestionAnsweringService(llm_provider, search_service)
+    return QuestionAnsweringService(
+        UUID("77b03295-6eab-4d37-9429-2eeef614f278"),
+        session,
+        llm_provider,
+        search_service,
+        conversation_service,
+    )

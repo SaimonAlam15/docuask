@@ -4,19 +4,19 @@ from datetime import datetime
 from typing import TYPE_CHECKING
 from uuid import UUID, uuid4
 
-from sqlalchemy import TIMESTAMP, String, UniqueConstraint, func
+from sqlalchemy import TIMESTAMP, ForeignKey, String, func
 from sqlalchemy.dialects.postgresql import UUID as PGUUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
 
 if TYPE_CHECKING:
-    from app.conversations.models.conversation import Conversation
-    from app.documents.models.document import Document
+    from app.conversations.models.conversation_message import ConversationMessage
+    from app.users.models.user import User
 
 
-class User(Base):
-    __tablename__ = "users"
+class Conversation(Base):
+    __tablename__ = "conversations"
 
     id: Mapped[UUID] = mapped_column(
         PGUUID(as_uuid=True),
@@ -24,19 +24,13 @@ class User(Base):
         default=uuid4,
     )
 
-    first_name: Mapped[str] = mapped_column(
-        String(255),
-        nullable=False,
-    )
+    user_id: Mapped[UUID] = mapped_column(ForeignKey("users.id"), nullable=True)
 
-    last_name: Mapped[str] = mapped_column(
-        String(255),
-        nullable=False,
-    )
+    user: Mapped[User] = relationship(back_populates="conversations")
 
-    email: Mapped[str] = mapped_column(
+    title: Mapped[str] = mapped_column(
         String(255),
-        nullable=False,
+        nullable=True,
     )
 
     created_at: Mapped[datetime] = mapped_column(
@@ -52,12 +46,6 @@ class User(Base):
         nullable=False,
     )
 
-    documents: Mapped[list[Document]] = relationship(
-        back_populates="user", cascade="all, delete-orphan"
+    conversation_messages: Mapped[list[ConversationMessage]] = relationship(
+        back_populates="conversation", cascade="all, delete-orphan"
     )
-
-    conversations: Mapped[list[Conversation]] = relationship(
-        back_populates="user", cascade="all, delete-orphan"
-    )
-
-    __table_args__ = (UniqueConstraint("email"),)
