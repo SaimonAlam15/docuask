@@ -32,6 +32,7 @@ class QuestionAnsweringService:
             )
             await self.conversation_service.add_message(
                 conversation_id=conversation_id,
+                user_id=self.user_id,
                 role=ConversationMessageRole.USER,
                 content=question,
             )
