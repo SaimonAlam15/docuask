@@ -34,13 +34,19 @@ class ConversationService:
         user_id: UUID,
         role: ConversationMessageRole,
         content: str,
+        rewritten_query: str | None = None,
     ):
         existing_conversation = await self.get_conversation(conversation_id, user_id)
         if not existing_conversation:
             return None
 
         await self.__message_repo.create_conversation_message(
-            ConversationMessageCreate(conversation_id=conversation_id, role=role, content=content)
+            ConversationMessageCreate(
+                conversation_id=conversation_id,
+                role=role,
+                content=content,
+                rewritten_query=rewritten_query,
+            )
         )
 
     async def get_conversation_messages(self, conversation_id: UUID) -> list[ConversationMessage]:

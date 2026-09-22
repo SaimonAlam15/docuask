@@ -1,8 +1,10 @@
-from typing import Protocol
+from typing import Protocol, TypeVar
 
-from app.llm.schemas.answer import LLMResponse
+from pydantic import BaseModel
+
+T = TypeVar("T", bound=BaseModel)
 
 
 class LLMProvider(Protocol):
-    async def generate(self, prompt: str) -> LLMResponse:
+    async def generate(self, prompt: str, response_model: type[T]) -> T:
         pass

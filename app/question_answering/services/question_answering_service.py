@@ -6,7 +6,7 @@ from app.conversations.services.conversation_service import ConversationService
 from app.documents.services.semantic_search_service import SemanticSearchService
 from app.enums.conversation import ConversationMessageRole
 from app.llm.base import LLMProvider
-from app.llm.schemas.answer import LLMResponse
+from app.llm.schemas.answer import LLMResponse, QueryRewriteResponse
 
 
 class QuestionAnsweringService:
@@ -25,6 +25,9 @@ class QuestionAnsweringService:
         self.conversation_service = conversation_service
 
     async def answer(self, question: str, conversation_id: UUID | None = None) -> LLMResponse:
+        conversation_messages = []
+        final_question = question
+
         if not conversation_id:
             # Create conversation
             conversation_id = await self.conversation_service.create_conversation(
@@ -37,14 +40,53 @@ class QuestionAnsweringService:
                 content=question,
             )
         else:
+            conversation_messages = await self.conversation_service.get_conversation_messages(
+                conversation_id
+            )
+            conversation_history = "\n".join(
+                [f"{cm.role}: {cm.content}" for cm in conversation_messages]
+            )
+            prompt = f"""
+Rewrite the user's current question as a standalone question suitable for
+semantic search.
+
+Conversation history:
+{conversation_history}
+
+Current question:
+{question}
+
+Use the conversation history only when necessary to resolve references or
+context that the current question depends on.
+
+Rules:
+- Preserve the meaning, intent, and scope of the current question.
+- Resolve ambiguous references using the conversation history when possible.
+- Replace pronouns and contextual references with the information they refer to
+  when doing so makes the question self-contained.
+- Do not introduce information that changes or unnecessarily narrows the
+  question.
+- Do not add details merely because they appear in the conversation history.
+- Do not broaden the question beyond what the user asked.
+- If the current question is already self-contained, keep it essentially
+  unchanged.
+- Return only the rewritten question. Do not answer it.
+
+Rewritten question:
+"""
+            llm_response = await self.llm_provider.generate(prompt, QueryRewriteResponse)
+            final_question = llm_response.query
+
             # Save question as conversation message
             await self.conversation_service.add_message(
                 conversation_id=conversation_id,
                 user_id=self.user_id,
                 role=ConversationMessageRole.USER,
                 content=question,
+                rewritten_query=final_question,
             )
-        search_results = await self.search_service.embed_and_search(question)
+
+        search_results = await self.search_service.embed_and_search(final_question)
 
         if not search_results:
             return "No context found."
@@ -68,7 +110,7 @@ Question:
 {question}
         """
 
-        llm_response = await self.llm_provider.generate(prompt)
+        llm_response = await self.llm_provider.generate(prompt, LLMResponse)
 
         # Save answer as conversation message
         await self.conversation_service.add_message(

@@ -11,3 +11,7 @@ class LLMResponse(BaseModel):
         description="The logical answer to the question based on the provided context."
     )
     sources: list[Source]
+
+
+class QueryRewriteResponse(BaseModel):
+    query: str

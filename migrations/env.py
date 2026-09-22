@@ -6,9 +6,8 @@ from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from app.config import Settings
-
-from app.db.base import Base
 from app.db import models
+from app.db.base import Base
 
 config = context.config
 
@@ -41,6 +40,7 @@ def do_run_migrations(connection: Connection) -> None:
     context.configure(
         connection=connection,
         target_metadata=target_metadata,
+        compare_server_default=True,
     )
 
     with context.begin_transaction():
