@@ -6,7 +6,7 @@ from app.conversations.services.conversation_service import ConversationService
 from app.documents.services.semantic_search_service import SemanticSearchService
 from app.enums.conversation import ConversationMessageRole
 from app.llm.base import LLMProvider
-from app.llm.schemas.answer import LLMResponse
+from app.llm.schemas.answer import LLMResponse, QueryRewriteResponse
 
 
 class QuestionAnsweringService:
@@ -26,6 +26,7 @@ class QuestionAnsweringService:
 
     async def answer(self, question: str, conversation_id: UUID | None = None) -> LLMResponse:
         conversation_messages = []
+        final_question = question
 
         if not conversation_id:
             # Create conversation
@@ -73,8 +74,8 @@ Rules:
 
 Rewritten question:
 """
-            llm_response = await self.llm_provider.generate(prompt)
-            question = llm_response.answer
+            llm_response = await self.llm_provider.generate(prompt, QueryRewriteResponse)
+            final_question = llm_response.query
 
             # Save question as conversation message
             await self.conversation_service.add_message(
@@ -82,9 +83,10 @@ Rewritten question:
                 user_id=self.user_id,
                 role=ConversationMessageRole.USER,
                 content=question,
+                rewritten_query=final_question,
             )
 
-        search_results = await self.search_service.embed_and_search(question)
+        search_results = await self.search_service.embed_and_search(final_question)
 
         if not search_results:
             return "No context found."
@@ -108,7 +110,7 @@ Question:
 {question}
         """
 
-        llm_response = await self.llm_provider.generate(prompt)
+        llm_response = await self.llm_provider.generate(prompt, LLMResponse)
 
         # Save answer as conversation message
         await self.conversation_service.add_message(

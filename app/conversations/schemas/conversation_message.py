@@ -9,3 +9,4 @@ class ConversationMessageCreate(BaseModel):
     conversation_id: UUID
     role: ConversationMessageRole
     content: str
+    rewritten_query: str | None
