@@ -107,7 +107,7 @@ Context:
 {context}
 
 Question:
-{question}
+{final_question}
         """
 
         llm_response = await self.llm_provider.generate(prompt, LLMResponse)
