@@ -165,8 +165,18 @@ async def test_follow_up_flow(mocker):
 
     fake_llm_provider.generate = mocker.AsyncMock(side_effect=generate_side_effect)
 
+    search_results = [
+        (
+            DocumentChunk(
+                content="Saimon Alam lives in Dhaka, Bangladesh. He was born there in 1990",
+                document_content_id="69c22e53-d610-492c-b8d5-8b858fb4c87e",
+                chunk_index=1,
+            ),
+            0.3,
+        )
+    ]
     fake_search_service = mocker.MagicMock()
-    fake_search_service.embed_and_search = mocker.AsyncMock()
+    fake_search_service.embed_and_search = mocker.AsyncMock(return_value=search_results)
 
     conversation_messages = [
         ConversationMessage(role="USER", content="Where does Saimon live?"),
@@ -211,3 +221,4 @@ async def test_follow_up_flow(mocker):
 
     assert second_type is LLMResponse
     assert "What is Saimon Alam's designation?" in second_prompt
+    assert "Saimon Alam lives in Dhaka, Bangladesh" in second_prompt
