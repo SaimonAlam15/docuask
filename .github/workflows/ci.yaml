@@ -46,6 +46,15 @@ jobs:
       - name: Install dependencies
         run: uv sync --frozen
 
+      - name: Check migration heads
+        run: |
+          HEAD_COUNT=$(uv run alembic heads | grep -c "(head)")
+          if [ "$HEAD_COUNT" -ne 1 ]; then
+            echo "Expected exactly one Alembic head, found $HEAD_COUNT"
+            uv run alembic heads
+            exit 1
+          fi
+
       - name: Run migrations
         env:
           DATABASE__HOST: localhost
