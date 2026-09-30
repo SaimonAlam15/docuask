@@ -5,7 +5,7 @@ from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
-from app.config import Settings
+from app.config import MigrationSettings
 from app.db import models
 from app.db.base import Base
 
@@ -14,7 +14,7 @@ config = context.config
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-settings = Settings()
+settings = MigrationSettings()
 
 config.set_main_option(
     "sqlalchemy.url",

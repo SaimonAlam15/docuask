@@ -1,3 +1,3 @@
-from .settings import Settings
+from .settings import MigrationSettings, Settings
 
 __all__ = ["Settings"]

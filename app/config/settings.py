@@ -13,3 +13,14 @@ class Settings(BaseSettings):
     redis: RedisConfig
     storage: StorageConfig
     openai: OpenAIConfig
+
+
+class MigrationSettings(BaseSettings):
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_nested_delimiter="__",
+        env_file_encoding="utf-8",
+        extra="ignore",
+    )
+
+    database: DatabaseConfig
