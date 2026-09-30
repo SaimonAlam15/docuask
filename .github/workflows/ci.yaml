@@ -48,7 +48,7 @@ jobs:
 
       - name: Run migrations
         env:
-          DATABASE__HOST: postgres
+          DATABASE__HOST: localhost
           DATABASE__PORT: 5432
           DATABASE__USER: postgres
           DATABASE__PASSWORD: postgres
@@ -57,7 +57,7 @@ jobs:
 
       - name: Run tests
         env:
-          DATABASE__HOST: postgres
+          DATABASE__HOST: localhost
           DATABASE__PORT: 5432
           DATABASE__USER: postgres
           DATABASE__PASSWORD: postgres
