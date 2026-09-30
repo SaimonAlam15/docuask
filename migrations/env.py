@@ -5,7 +5,7 @@ from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
-from app.config.models import DatabaseConfig
+from app.config import MigrationSettings
 from app.db import models
 from app.db.base import Base
 
@@ -14,11 +14,11 @@ config = context.config
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-database_config = DatabaseConfig()
+settings = MigrationSettings()
 
 config.set_main_option(
     "sqlalchemy.url",
-    database_config.url,
+    settings.database.url,
 )
 
 target_metadata = Base.metadata
@@ -26,7 +26,7 @@ target_metadata = Base.metadata
 
 def run_migrations_offline() -> None:
     context.configure(
-        url=database_config.url,
+        url=settings.database.url,
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
