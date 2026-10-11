@@ -30,7 +30,7 @@ class DocumentChunkRepository:
         return db_chunks
 
     async def find_similar_chunks(
-        self, query_embedding: list[float], user_id: UUID, limit: int = 5
+        self, query_embedding: list[float], user_id: UUID, limit: int = 10
     ) -> list[tuple[DocumentChunk, float]]:
         distance_expr = DocumentChunk.embedding.cosine_distance(query_embedding)
 

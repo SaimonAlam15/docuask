@@ -1,11 +1,11 @@
 dev:
-	docker compose -f compose.yaml -f compose.dev.yaml up --build
+	docker compose -f compose.yml -f compose.dev.yml up --build
 
 prod:
 	docker compose up --build
 
 dev-down:
-	docker compose -f compose.yaml -f compose.dev.yaml down
+	docker compose -f compose.yml -f compose.dev.yml down
 
 prod-down:
 	docker compose down
