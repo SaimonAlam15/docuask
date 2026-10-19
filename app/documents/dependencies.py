@@ -1,3 +1,5 @@
+from functools import lru_cache
+
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -17,6 +19,7 @@ from app.documents.repositories.document_content_repository import DocumentConte
 from app.documents.repositories.document_file_repository import DocumentFileRepository
 from app.documents.repositories.document_repository import DocumentRepository
 from app.documents.services.document_service import DocumentService
+from app.documents.services.reranker import Reranker
 from app.documents.services.semantic_search_service import SemanticSearchService
 
 
@@ -80,8 +83,14 @@ def get_document_service(
     )
 
 
+@lru_cache
+def get_reranker() -> Reranker:
+    return Reranker()
+
+
 def get_semantic_search_service(
     chunk_repo: DocumentChunkRepository = Depends(get_document_chunk_repository),
     embedding_provider: EmbeddingProvider = Depends(get_openai_embedding_provider),
+    reranker: Reranker = Depends(get_reranker),
 ) -> SemanticSearchService:
-    return SemanticSearchService(chunk_repo, embedding_provider)
+    return SemanticSearchService(chunk_repo, embedding_provider, reranker)
