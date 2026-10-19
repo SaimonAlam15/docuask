@@ -21,6 +21,7 @@ async def search(
     for obj in result:
         res.append(
             SearchResponse(
+                id=obj[0].id,
                 document_content_id=obj[0].document_content_id,
                 content=obj[0].content,
                 chunk_index=obj[0].chunk_index,
