@@ -9,7 +9,7 @@ class DocumentRepository:
         self.__db = db
 
     async def create_document(self, document: DocumentCreate):
-        db_document = Document(title=document.title)
+        db_document = Document(title=document.title, user_id=document.user_id)
         self.__db.add(db_document)
         await self.__db.flush()
         await self.__db.refresh(db_document)

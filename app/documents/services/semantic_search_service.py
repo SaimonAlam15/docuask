@@ -31,7 +31,7 @@ class SemanticSearchService:
 
         search_result = await self.chunk_repo.find_similar_chunks(
             query_embedding=query_embedding[0],
-            user_id=UUID("77b03295-6eab-4d37-9429-2eeef614f278"),
+            user_id=UUID("65ead233-84a5-414a-8259-105919f1b61a"),
         )
 
         return self.reranker.rerank(

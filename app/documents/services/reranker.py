@@ -20,7 +20,4 @@ class Reranker:
 
         ranked_chunks = sorted(zip(results, scores), key=lambda item: float(item[1]), reverse=True)
 
-        for c in ranked_chunks:
-            print(f"id: {c[0][0].id}, score: {c[1]}")
-
         return [chunk for (chunk, _) in ranked_chunks[:top_k]]
