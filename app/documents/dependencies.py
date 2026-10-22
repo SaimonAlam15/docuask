@@ -9,6 +9,7 @@ from app.dependencies import (
     get_settings,
 )
 from app.documents.chunking.base import DocumentChunker
+from app.documents.chunking.chonkie_chunker import ChonkieChunker
 from app.documents.chunking.fixed_size import FixedSizeChunker
 from app.documents.embeddings.base import EmbeddingProvider
 from app.documents.embeddings.openai import OpenAIEmbeddingProvider
@@ -51,6 +52,10 @@ def get_fixed_size_chunker() -> FixedSizeChunker:
     return FixedSizeChunker()
 
 
+def get_chonkie_chunker() -> ChonkieChunker:
+    return ChonkieChunker()
+
+
 def get_openai_embedding_provider(
     settings: Settings = Depends(get_settings),
 ) -> OpenAIEmbeddingProvider:
@@ -66,7 +71,7 @@ def get_document_service(
     doc_content_repo: DocumentContentRepository = Depends(get_document_content_repository),
     doc_chunk_repo: DocumentChunkRepository = Depends(get_document_chunk_repository),
     extractor: DocumentExtractor = Depends(get_pdf_extractor),
-    chunker: DocumentChunker = Depends(get_fixed_size_chunker),
+    chunker: DocumentChunker = Depends(get_chonkie_chunker),
     embedding_provider: EmbeddingProvider = Depends(get_openai_embedding_provider),
     settings: Settings = Depends(get_settings),
 ) -> DocumentService:
