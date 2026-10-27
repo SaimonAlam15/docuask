@@ -31,12 +31,12 @@ class SemanticSearchService:
 
         search_result = await self.chunk_repo.find_similar_chunks(
             query_embedding=query_embedding[0],
-            user_id=UUID("65ead233-84a5-414a-8259-105919f1b61a"),
+            user_id=UUID("24818644-1a69-4ca8-a85a-ee05938b34c2"),
         )
 
-        return self.reranker.rerank(
-            query=query,
-            results=search_result,
-            top_k=10,
-        )
-        # return search_result
+        # return self.reranker.rerank(
+        #     query=query,
+        #     results=search_result,
+        #     top_k=10,
+        # )
+        return search_result

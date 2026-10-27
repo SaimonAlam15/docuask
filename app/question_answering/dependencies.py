@@ -27,7 +27,7 @@ def get_question_answering_service(
     conversation_service: ConversationService = Depends(get_conversation_service),
 ) -> QuestionAnsweringService:
     return QuestionAnsweringService(
-        UUID("65ead233-84a5-414a-8259-105919f1b61a"),
+        UUID("24818644-1a69-4ca8-a85a-ee05938b34c2"),
         session,
         llm_provider,
         search_service,

@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 from uuid import UUID, uuid4
 
 from pgvector.sqlalchemy import Vector
-from sqlalchemy import TIMESTAMP, ForeignKey, Integer, Text, UniqueConstraint, func
+from sqlalchemy import ARRAY, TIMESTAMP, ForeignKey, Integer, String, Text, UniqueConstraint, func
 from sqlalchemy.dialects.postgresql import UUID as PGUUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -27,6 +27,8 @@ class DocumentChunk(Base):
     document_content: Mapped[DocumentContent] = relationship(back_populates="chunks")
 
     content: Mapped[str] = mapped_column(Text, nullable=False)
+
+    headings: Mapped[list[str] | None] = mapped_column(ARRAY(String), nullable=True)
 
     chunk_index: Mapped[int] = mapped_column(Integer, nullable=False)
 
