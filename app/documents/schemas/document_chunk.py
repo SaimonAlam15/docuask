@@ -7,6 +7,7 @@ from pydantic import BaseModel
 class DocumentChunkCreate(BaseModel):
     document_content_id: UUID
     content: str
+    headings: list[str]
     chunk_index: int
     embedding: list[float]
 
@@ -14,6 +15,7 @@ class DocumentChunkCreate(BaseModel):
 class DocumentChunkResponse(BaseModel):
     document_content_id: UUID
     content: str
+    headings: list[str]
     chunk_index: int
     distance: float
     created_at: datetime

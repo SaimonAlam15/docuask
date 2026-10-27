@@ -5,6 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config.settings import Settings
 from app.documents.chunking.base import DocumentChunker
+from app.documents.chunking.docling_chunker import DoclingChunker
 from app.documents.embeddings.base import EmbeddingProvider
 from app.documents.extraction.base import DocumentExtractor
 from app.documents.repositories.document_chunk_repository import DocumentChunkRepository
@@ -29,7 +30,7 @@ class DocumentService:
         doc_content_repo: DocumentContentRepository,
         doc_chunk_repo: DocumentChunkRepository,
         extractor: DocumentExtractor,
-        chunker: DocumentChunker,
+        chunker: DoclingChunker,
         embedding_provider: EmbeddingProvider,
         settings: Settings,
     ):
@@ -84,23 +85,27 @@ class DocumentService:
 
                 # Chunk the extracted content
                 logger.info("Chunking document content...")
-                chunks = self.chunker.chunk(extracted_content)
+                chunks = self.chunker.chunk(storage_key)
                 document_chunks = []
-                embeddings = await self.embedding_provider.embed(chunks)
+                chunks_to_embed = [
+                    f"Section: {' > '.join(chunk[0])}\n\n{chunk[1]}" for chunk in chunks
+                ]
+                embeddings = await self.embedding_provider.embed(chunks_to_embed)
                 if len(embeddings) != len(chunks):
                     raise ValueError(
                         "Embedding provider returned an unexpected number of embeddings"
                     )
                 for idx, chunk in enumerate(chunks):
+                    print("Headings>>>", chunk[0])
                     document_chunks.append(
                         DocumentChunkCreate(
                             document_content_id=saved_document_content.id,
-                            content=chunk,
+                            content=chunk[1],
+                            headings=chunk[0],
                             chunk_index=idx,
                             embedding=embeddings[idx],
                         )
                     )
-
                 await self.doc_chunk_repo.create_document_chunks(document_chunks)
 
                 await self.session.commit()

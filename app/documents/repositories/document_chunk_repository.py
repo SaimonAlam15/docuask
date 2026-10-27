@@ -21,6 +21,7 @@ class DocumentChunkRepository:
                 document_content_id=chunk.document_content_id,
                 chunk_index=chunk.chunk_index,
                 content=chunk.content,
+                headings=chunk.headings,
                 embedding=chunk.embedding,
             )
             for chunk in chunks

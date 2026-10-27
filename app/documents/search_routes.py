@@ -24,6 +24,7 @@ async def search(
                 id=obj[0].id,
                 document_content_id=obj[0].document_content_id,
                 content=obj[0].content,
+                headings=obj[0].headings,
                 chunk_index=obj[0].chunk_index,
                 created_at=obj[0].created_at,
                 distance=obj[1],

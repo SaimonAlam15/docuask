@@ -8,6 +8,7 @@ class SearchResponse(BaseModel):
     id: UUID
     document_content_id: UUID
     content: str
+    headings: list[str]
     chunk_index: int
     distance: float
     created_at: datetime
