@@ -694,6 +694,7 @@ dependencies = [
     { name = "chonkie" },
     { name = "docling" },
     { name = "fastapi" },
+    { name = "multiprocess" },
     { name = "openai" },
     { name = "pgvector" },
     { name = "pydantic-settings" },
@@ -725,6 +726,7 @@ requires-dist = [
     { name = "chonkie", specifier = ">=1.7.0" },
     { name = "docling", specifier = ">=2.142.0" },
     { name = "fastapi", specifier = ">=0.139.0" },
+    { name = "multiprocess", specifier = "==0.70.11" },
     { name = "openai", specifier = ">=3.3.1" },
     { name = "pgvector", specifier = ">=0.5.0" },
     { name = "pydantic-settings", specifier = ">=2.14.2" },
@@ -1514,16 +1516,16 @@ wheels = [
 
 [[package]]
 name = "mpire"
-version = "2.10.2"
+version = "2.7.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "pygments" },
     { name = "pywin32", marker = "sys_platform == 'win32'" },
     { name = "tqdm" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/3a/93/80ac75c20ce54c785648b4ed363c88f148bf22637e10c9863db4fbe73e74/mpire-2.10.2.tar.gz", hash = "sha256:f66a321e93fadff34585a4bfa05e95bd946cf714b442f51c529038eb45773d97", size = 271270, upload-time = "2024-05-07T14:00:31.815Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/7b/71/e59d56a31a2d518eede57e61ae99818fa67392aca2e620f10124f2bf28c3/mpire-2.7.1.tar.gz", hash = "sha256:ac3064125953c7f3ec63a24d7701db9366f29fc1b6209f6f2cffe42561b8613f", size = 296255, upload-time = "2023-04-14T12:29:52.21Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/20/14/1db1729ad6db4999c3a16c47937d601fcb909aaa4224f5eca5a2f145a605/mpire-2.10.2-py3-none-any.whl", hash = "sha256:d627707f7a8d02aa4c7f7d59de399dec5290945ddf7fbd36cbb1d6ebb37a51fb", size = 272756, upload-time = "2024-05-07T14:00:29.633Z" },
+    { url = "https://files.pythonhosted.org/packages/b6/fa/3bc799eab0e4d1e9654562ac2363f28a06bffc6d788f492aacd5aa875bb2/mpire-2.7.1-py3-none-any.whl", hash = "sha256:729f1a0e4b9545f8d968f988184566bac40c14f8087632932b318fed7aa343c3", size = 302028, upload-time = "2023-04-14T12:29:49.814Z" },
 ]
 
 [package.optional-dependencies]
@@ -1542,19 +1544,14 @@ wheels = [
 
 [[package]]
 name = "multiprocess"
-version = "0.70.19"
+version = "0.70.11"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "dill" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/a2/f2/e783ac7f2aeeed14e9e12801f22529cc7e6b7ab80928d6dcce4e9f00922d/multiprocess-0.70.19.tar.gz", hash = "sha256:952021e0e6c55a4a9fe4cd787895b86e239a40e76802a789d6305398d3975897", size = 2079989, upload-time = "2026-01-19T06:47:39.744Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/a4/0a/b0d517755cce23781c69c27b6bfe1463e88ebb63270183807b15e05aa9fc/multiprocess-0.70.11.zip", hash = "sha256:e75f02a8dc3707207d3356e0d272933a718654b54d792fc1f7b2925b5c0e120d", size = 2410257, upload-time = "2020-11-02T22:35:59.526Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/e3/45/8004d1e6b9185c1a444d6b55ac5682acf9d98035e54386d967366035a03a/multiprocess-0.70.19-py310-none-any.whl", hash = "sha256:97404393419dcb2a8385910864eedf47a3cadf82c66345b44f036420eb0b5d87", size = 134948, upload-time = "2026-01-19T06:47:32.325Z" },
-    { url = "https://files.pythonhosted.org/packages/86/c2/dec9722dc3474c164a0b6bcd9a7ed7da542c98af8cabce05374abab35edd/multiprocess-0.70.19-py311-none-any.whl", hash = "sha256:928851ae7973aea4ce0eaf330bbdafb2e01398a91518d5c8818802845564f45c", size = 144457, upload-time = "2026-01-19T06:47:33.711Z" },
-    { url = "https://files.pythonhosted.org/packages/71/70/38998b950a97ea279e6bd657575d22d1a2047256caf707d9a10fbce4f065/multiprocess-0.70.19-py312-none-any.whl", hash = "sha256:3a56c0e85dd5025161bac5ce138dcac1e49174c7d8e74596537e729fd5c53c28", size = 150281, upload-time = "2026-01-19T06:47:35.037Z" },
-    { url = "https://files.pythonhosted.org/packages/7f/74/d2c27e03cb84251dfe7249b8e82923643c6d48fa4883b9476b025e7dc7eb/multiprocess-0.70.19-py313-none-any.whl", hash = "sha256:8d5eb4ec5017ba2fab4e34a747c6d2c2b6fecfe9e7236e77988db91580ada952", size = 156414, upload-time = "2026-01-19T06:47:35.915Z" },
-    { url = "https://files.pythonhosted.org/packages/a0/61/af9115673a5870fd885247e2f1b68c4f1197737da315b520a91c757a861a/multiprocess-0.70.19-py314-none-any.whl", hash = "sha256:e8cc7fbdff15c0613f0a1f1f8744bef961b0a164c0ca29bdff53e9d2d93c5e5f", size = 160318, upload-time = "2026-01-19T06:47:37.497Z" },
-    { url = "https://files.pythonhosted.org/packages/7e/82/69e539c4c2027f1e1697e09aaa2449243085a0edf81ae2c6341e84d769b6/multiprocess-0.70.19-py39-none-any.whl", hash = "sha256:0d4b4397ed669d371c81dcd1ef33fd384a44d6c3de1bd0ca7ac06d837720d3c5", size = 133477, upload-time = "2026-01-19T06:47:38.619Z" },
+    { url = "https://files.pythonhosted.org/packages/fe/cc/97c27e9aa9a75b2cdd9c279f17dffcc04702b09b8968038025d4190dd1af/multiprocess-0.70.11-py3-none-any.whl", hash = "sha256:d831d3bebfa681475fa67c434c09268f29191c41b54dc752b5a948456e083854", size = 98579, upload-time = "2020-11-02T22:35:54.651Z" },
 ]
 
 [[package]]
