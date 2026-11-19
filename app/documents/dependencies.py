@@ -95,7 +95,7 @@ def get_document_service(
 
 @lru_cache
 def get_reranker() -> Reranker:
-    return Reranker()
+    return Reranker(model_name="BAAI/bge-reranker-base")  # model_name="BAAI/bge-reranker-base"
 
 
 def get_semantic_search_service(

@@ -96,7 +96,6 @@ class DocumentService:
                         "Embedding provider returned an unexpected number of embeddings"
                     )
                 for idx, chunk in enumerate(chunks):
-                    print("Headings>>>", chunk[0])
                     document_chunks.append(
                         DocumentChunkCreate(
                             document_content_id=saved_document_content.id,
