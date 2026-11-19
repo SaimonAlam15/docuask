@@ -2,8 +2,8 @@ from pydantic import BaseModel, Field
 
 
 class Source(BaseModel):
-    document_content_id: str = Field(description="The id of the content the chunk belongs to.")
-    chunk_index: int = Field(description="The numerical chunk index.")
+    document_title: str = Field(description="The title of the document the chunk belongs to.")
+    document_chunk_index: int = Field(description="The numerical chunk index.")
 
 
 class LLMResponse(BaseModel):

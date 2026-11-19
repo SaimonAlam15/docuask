@@ -32,11 +32,11 @@ class DocumentChunkRepository:
 
     async def find_similar_chunks(
         self, query_embedding: list[float], user_id: UUID, limit: int = 10
-    ) -> list[tuple[DocumentChunk, float]]:
+    ) -> list[tuple[DocumentChunk, Document, float]]:
         distance_expr = DocumentChunk.embedding.cosine_distance(query_embedding)
 
         stmt = (
-            select(DocumentChunk, distance_expr)
+            select(DocumentChunk, Document, distance_expr)
             .join(DocumentContent, DocumentContent.id == DocumentChunk.document_content_id)
             .join(Document, Document.id == DocumentContent.document_id)
             .where(Document.user_id == user_id)
