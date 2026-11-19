@@ -1,0 +1,14 @@
+{"id":"aq_001","category":"answerable","question":"What institution awarded Saimon's bachelor's degree?","expected_answer":"ULAB","expected_behavior":"answer"}
+{"id":"aq_002","category":"answerable","question":"Where is Saimon based?","expected_answer":"Dhaka, Bangladesh","expected_behavior":"answer"}
+{"id":"aq_003","category":"unanswerable","question":"What is Saimon's favorite programming language?","expected_answer":null,"expected_behavior":"abstain"}
+{"id":"aq_004","category":"answerable","question":"What does Saimon do for a living?","expected_answer":"Saimon is a Senior Software Engineer","expected_behavior":"answer"}
+{"id":"aq_005","category":"answerable","question":"How old is Saimon?","expected_answer":"Saimon is 35 years old","expected_behavior":"answer"}
+{"id":"aq_006","category":"answerable","question":"Did Saimon Alam work for a company in New York, USA?","expected_answer":"Yes, he worked for Pace","expected_behavior":"answer"}
+{"id":"aq_007","category":"answerable","question":"What movie did Saimon watch recently?","expected_answer":"He watched spiderman","expected_behavior":"answer"}
+{"id":"aq_008","category":"unanswerable","question":"Did Saimon ever travel to Thailand?","expected_answer":null,"expected_behavior":"abstain"}
+{"id":"aq_009","category":"unanswerable","question":"What position does Saimon play in Basketball?","expected_answer":null,"expected_behavior":"abstain"}
+{"id":"aq_010","category":"unanswerable","question":"Is Saimon Alam married?","expected_answer":null,"expected_behavior":"abstain"}
+{"id":"aq_011","category":"unanswerable","question":"Does Saimon Alam know how to drive?","expected_answer":null,"expected_behavior":"abstain"}
+{"id":"aq_012","category":"answerable","question":"How much did Saimon Alam spend between May 2025 and July 2025?","expected_answer":"150,000 BDT","expected_behavior":"answer"}
+{"id":"aq_013","category":"answerable","question":"Which companies has Saimon recently applied for a job to?","expected_answer":"Medallion, Breathmentq","expected_behavior":"answer"}
+{"id":"aq_014","category":"answerable","question":"Summarize the different projects that Saimon has worked on","expected_answer":"AI-powered ATS, Data omboarding platform, Food delivery app, HRMS","expected_behavior":"answer"}

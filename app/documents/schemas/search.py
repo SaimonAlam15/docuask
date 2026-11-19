@@ -11,4 +11,5 @@ class SearchResponse(BaseModel):
     headings: list[str]
     chunk_index: int
     distance: float
+    reranker_score: float
     created_at: datetime
