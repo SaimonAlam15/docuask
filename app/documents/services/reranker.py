@@ -1,5 +1,6 @@
 from sentence_transformers import CrossEncoder
 
+from app.documents.models.document import Document
 from app.documents.models.document_chunk import DocumentChunk
 
 
@@ -11,14 +12,14 @@ class Reranker:
         self.model = CrossEncoder(model_name)
 
     def rerank(
-        self, query: str, results: list[tuple[DocumentChunk, float]], top_k: int = 5
+        self, query: str, results: list[tuple[DocumentChunk, Document, float]], top_k: int = 5
     ) -> list:
         if not results:
             return []
 
         pairs = [
             (query, f"Section: {' > '.join(chunk.headings)}\n\n{chunk.content}")
-            for chunk, _ in results
+            for chunk, _, _ in results
         ]
 
         scores = self.model.predict(pairs)

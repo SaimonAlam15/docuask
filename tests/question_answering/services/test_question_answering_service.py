@@ -4,6 +4,7 @@ import pytest
 
 import app.db.models
 from app.conversations.models.conversation_message import ConversationMessage
+from app.documents.models.document import Document
 from app.documents.models.document_chunk import DocumentChunk
 from app.llm.schemas.answer import LLMResponse, QueryRewriteResponse, Source
 from app.question_answering.services.question_answering_service import QuestionAnsweringService
@@ -46,7 +47,9 @@ async def test_llm_response(mocker):
                 content="Bangladesh became independent in 1971.",
                 document_content_id="69c22e53-d610-492c-b8d5-8b858fb4c87e",
                 chunk_index=1,
+                headings=["Heading 1"],
             ),
+            Document(title="Bangladesh Studies"),
             0.3,
         )
     ]
@@ -55,7 +58,7 @@ async def test_llm_response(mocker):
     fake_llm_provider = mocker.MagicMock()
     fake_llm_response = LLMResponse(
         answer="Bangladesh became independent in 1971",
-        sources=[Source(document_content_id="69c22e53-d610-492c-b8d5-8b858fb4c87e", chunk_index=1)],
+        sources=[Source(document_title="Bangladesh Studies", document_chunk_index=1)],
     )
     fake_llm_provider.generate = mocker.AsyncMock(return_value=fake_llm_response)
 
@@ -85,11 +88,13 @@ async def test_llm_response(mocker):
 
     context = [
         {
-            "content": result.content,
-            "document_content_id": result.document_content_id,
-            "chunk_index": result.chunk_index,
+            "document_id": document.id,
+            "document_title": document.title,
+            "document_chunk_content": chunk.content,
+            "document_chunk_headings": chunk.headings,
+            "document_chunk_index": chunk.chunk_index,
         }
-        for result, _ in search_results
+        for chunk, document, _ in search_results
     ]
     prompt = f"""
 Answer the user's question using only the provided context which is in the form of a list of objects.
@@ -97,17 +102,53 @@ Once you have an answer, return it in the given json format.
 Context: 
 {context}
 
+Source Attribution and Context:
+- Treat each document as a distinct source of information. Use its title to identify the source, but do not assume that the filename accurately describes its contents or identifies the person or entity discussed.
+- Documents belonging to the same user may concern different people, organizations, or subjects. Never assume they all describe the user or the same entity.
+- You may combine information from multiple documents and chunks when answering questions, provided the information is relevant and the sources support the conclusions.
+- Preserve the distinction between information found in different documents. Do not attribute information from one document to a person or entity mentioned in another without supporting evidence.
+- When the subject of a document or a piece of information cannot be established from the available context, do not guess. Explain the ambiguity when it affects the answer.
+- If sources contradict one another, acknowledge the discrepancy rather than arbitrarily choosing one version.
+- Base answers on the provided context. Do not invent missing information or make unsupported assumptions.
+
+
+Contextual Interpretation:
+Interpret retrieved information in the context of its document structure, headings, and surrounding content.
+
+You may make reasonable inferences from conventional document layouts and clearly established relationships. For example, an institution listed under an individual's education or degree section in their résumé can be treated as the institution associated with that qualification.
+
+Do not require information to be explicitly stated in a complete sentence when its meaning is clear from the document structure.
+
+However, distinguish reasonable contextual inferences from unsupported assumptions. If the document structure does not establish the relationship with sufficient confidence, acknowledge the uncertainty.
+
+
+Answering Rules:
+- Answer questions using the information available in the retrieved context.
+- Prioritize directly relevant evidence over information that is merely topically related.
+- When multiple chunks or documents contain relevant information, combine them when appropriate to provide a complete answer.
+- Do not omit important details necessary to answer the question accurately.
+- Do not introduce facts, assumptions, or external knowledge that are not supported by the retrieved context.
+- If the context provides enough information to answer the question, answer directly and confidently. Do not unnecessarily express uncertainty or demand explicit wording when the meaning is clear.
+- If the context provides only partial information, answer what can be established and clearly identify what remains unknown.
+- If the context does not contain sufficient information to answer the question, explicitly state that the information is unavailable. Do not guess or fabricate an answer.
+- If retrieved sources contradict one another, acknowledge the conflicting information and identify the relevant sources.
+- Keep answers focused on the question. Avoid unnecessary explanations or unrelated information.
+- Ensure that every factual claim in the answer is supported by the retrieved context.
+- Include source references for the information used in the answer, following the application's expected source-reference format.
+
 Question:
 {question}
         """
 
     assert context == [
         {
-            "content": res.content,
-            "document_content_id": res.document_content_id,
-            "chunk_index": res.chunk_index,
+            "document_id": document.id,
+            "document_title": document.title,
+            "document_chunk_content": chunk.content,
+            "document_chunk_headings": chunk.headings,
+            "document_chunk_index": chunk.chunk_index,
         }
-        for res, _ in search_results
+        for chunk, document, _ in search_results
     ]
 
     fake_llm_provider.generate.assert_awaited_once_with(prompt, LLMResponse)
@@ -122,6 +163,7 @@ async def test_llm_failure(mocker):
                 document_content_id="69c22e53-d610-492c-b8d5-8b858fb4c87e",
                 chunk_index=1,
             ),
+            Document(title="Bangladesh Studies"),
             0.3,
         )
     ]
@@ -172,6 +214,7 @@ async def test_follow_up_flow(mocker):
                 document_content_id="69c22e53-d610-492c-b8d5-8b858fb4c87e",
                 chunk_index=1,
             ),
+            Document(title="Saimon Alam Resume"),
             0.3,
         )
     ]
