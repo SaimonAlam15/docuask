@@ -28,6 +28,7 @@ async def search(
                 chunk_index=obj[0].chunk_index,
                 created_at=obj[0].created_at,
                 distance=obj[1],
+                reranker_score=obj[2],
             )
         )
     return res

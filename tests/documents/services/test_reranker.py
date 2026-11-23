@@ -6,9 +6,21 @@ from app.documents.services.reranker import Reranker
 
 def test_rerank_sorts_by_score_and_limits_results():
     chunks = [
-        (SimpleNamespace(content="Chunk A"), 0.3),
-        (SimpleNamespace(content="Chunk B"), 0.2),
-        (SimpleNamespace(content="Chunk C"), 0.4),
+        (
+            SimpleNamespace(content="Chunk A", headings=["Heading 1"]),
+            SimpleNamespace(title="Document A"),
+            0.3,
+        ),
+        (
+            SimpleNamespace(content="Chunk B", headings=["Heading 2", "Sub-heading 2-1"]),
+            SimpleNamespace(title="Document B"),
+            0.2,
+        ),
+        (
+            SimpleNamespace(content="Chunk C", headings=["Heading 3"]),
+            SimpleNamespace(title="Document C"),
+            0.4,
+        ),
     ]
 
     with patch("app.documents.services.reranker.CrossEncoder") as mock_encoder:
@@ -19,7 +31,9 @@ def test_rerank_sorts_by_score_and_limits_results():
         reranker = Reranker()
         results = reranker.rerank("test question", chunks, top_k=2)
 
-    assert [chunk.content for chunk, _ in results] == [
+    print("results>>>", results)
+
+    assert [chunk.content for chunk, _, _ in results] == [
         "Chunk B",
         "Chunk C",
     ]
